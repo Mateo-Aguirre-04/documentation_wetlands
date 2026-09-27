@@ -6,6 +6,8 @@
 
 [Parametros red](parametros_red.md)
 
-[Etiquetado](etiqutado.md)
+[Etiquetado](etiquetado.md)
 
 [Red RESNET-50 y UNet](red_RESNET-50_y_UNet.md)
+
+[Red segmentación](red_segmentacion.md)
