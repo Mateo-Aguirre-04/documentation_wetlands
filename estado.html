@@ -1,0 +1,120 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Estado y hoja de ruta · Humedales altoandinos</title>
+<meta name="description" content="Avance del proyecto, resultados preliminares y próximos pasos.">
+<link rel="icon" href="assets/img/icono.svg" type="image/svg+xml">
+<link rel="stylesheet" href="assets/css/estilo.css">
+<script>(function(){try{var t=localStorage.getItem("tema");if(!t)t=matchMedia("(prefers-color-scheme: dark)").matches?"dark":"light";document.documentElement.setAttribute("data-theme",t);}catch(e){}})();</script>
+</head>
+<body>
+<a class="skip-link" href="#main">Saltar al contenido</a>
+<header class="site-header">
+  <button class="icon-btn menu-btn" id="menu-btn" aria-label="Abrir menú" aria-expanded="false"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M4 7h16M4 12h16M4 17h16"/></svg></button>
+  <a class="brand" href="index.html"><img class="brand-mark" src="assets/img/icono.svg" alt=""><span>Humedales altoandinos<small>Documentación del proyecto</small></span></a>
+  <div class="header-spacer"></div>
+  <button class="icon-btn" id="theme-btn" aria-label="Cambiar tema"></button>
+</header>
+
+<div class="layout">
+<nav class="sidebar" id="sidebar" aria-label="Secciones"></nav>
+
+<main class="content" id="main">
+<div class="eyebrow">07 · Seguimiento</div>
+<h1>Estado y hoja de ruta</h1>
+<p class="lead">Resumen del avance del proyecto, de lo que muestran los resultados hasta ahora y de los pasos previstos. <span class="small">Última actualización: noviembre de 2026.</span></p>
+
+<h2>Avance por componente</h2>
+<div class="table-wrap">
+<table>
+  <thead><tr><th>Componente</th><th>Estado</th><th>Comentario</th></tr></thead>
+  <tbody>
+    <tr><td>Herramientas de revisión manual</td><td><span class="badge ok">Completado</span></td><td>Tres generaciones; la actual combina SAM 2 con dibujo manual.</td></tr>
+    <tr><td>Pre-etiquetado automático v3</td><td><span class="badge ok">Completado</span></td><td>Con descriptores de forma y topología y pruebas sintéticas automatizadas.</td></tr>
+    <tr><td>Capas de terreno por fotogrametría</td><td><span class="badge ok">Completado</span></td><td>Integradas como opción del pre-etiquetado; útiles en vuelos de alta resolución.</td></tr>
+    <tr><td>Pre-etiquetado de nuevas campañas</td><td><span class="badge ok">Completado</span></td><td>Propuestas generadas sobre copias de las campañas históricas y recientes.</td></tr>
+    <tr><td>Revisión humana de esas propuestas</td><td><span class="badge run">En curso</span></td><td>Paso necesario antes de usarlas para entrenar.</td></tr>
+    <tr><td>Prueba de diseño (protocolo común)</td><td><span class="badge ok">Completado</span></td><td>Un solo programa y un solo protocolo para todas las redes.</td></tr>
+    <tr><td>Benchmark · fases 0 a 3</td><td><span class="badge ok">Completado</span></td><td>Las ocho redes entrenadas cumplen el criterio de ausencia de sobreajuste.</td></tr>
+    <tr><td>EfficientViT-Seg</td><td><span class="badge wait">Pendiente</span></td><td>Última red ligera por incorporar al benchmark.</td></tr>
+    <tr><td>Benchmark · fase 4</td><td><span class="badge wait">Próximo</span></td><td>Búsqueda de hiperparámetros por red con el mismo presupuesto.</td></tr>
+    <tr><td>Evaluación final en prueba</td><td><span class="badge off">Pendiente</span></td><td>Medición única sobre el conjunto reservado, con repeticiones por semilla.</td></tr>
+    <tr><td>Estimación de profundidad</td><td><span class="badge off">Futuro</span></td><td>La arquitectura propuesta ya contempla la rama; faltan datos de referencia suficientes.</td></tr>
+  </tbody>
+</table>
+</div>
+
+<h2>Lo que muestran los resultados hasta ahora</h2>
+<div class="cards two">
+  <div class="card">
+    <span class="card-kicker">Etiquetado</span>
+    <h4>El pre-etiquetado reduce mucho el trabajo manual</h4>
+    <p>Cada versión del pre-etiquetador mejoró a la anterior. La versión 3 supera con claridad a las anteriores, sobre todo en la continuidad de los canales finos, que eran su principal debilidad.</p>
+  </div>
+  <div class="card">
+    <span class="card-kicker">Terreno</span>
+    <h4>El relieve ayuda, pero de forma acotada</h4>
+    <p>Las capas de terreno aportan una mejora pequeña y estadísticamente consistente en los vuelos de mayor resolución, y son neutras en los de mayor altura.</p>
+  </div>
+  <div class="card">
+    <span class="card-kicker">Redes</span>
+    <h4>Todas las redes aprenden sin memorizar</h4>
+    <p>Con la receta común, las ocho redes entrenadas cumplen el criterio de ausencia de sobreajuste. Es la condición previa para compararlas de forma justa.</p>
+  </div>
+  <div class="card">
+    <span class="card-kicker">Redes</span>
+    <h4>Diferencias moderadas entre arquitecturas</h4>
+    <p>En validación, las redes con mayor capacidad de contexto global obtienen una ligera ventaja. Son resultados preliminares: falta ajustar los hiperparámetros de cada red y la evaluación sobre el conjunto de prueba.</p>
+  </div>
+</div>
+
+<div class="callout warn">
+  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10.3 3.9 1.8 18a2 2 0 0 0 1.7 3h17a2 2 0 0 0 1.7-3L13.7 3.9a2 2 0 0 0-3.4 0zM12 9v4M12 17h.01"/></svg>
+  <div><p><strong>Ningún resultado es todavía definitivo.</strong> Todas las decisiones tomadas hasta ahora se basan en datos de validación. El conjunto de prueba permanece sin usar y se medirá una sola vez al final, para que la conclusión del benchmark sea imparcial.</p></div>
+</div>
+
+<h2>Hoja de ruta</h2>
+<ul class="timeline">
+  <li class="now">
+    <span class="when">Corto plazo</span>
+    <h4>Cerrar el benchmark</h4>
+    <p>Incorporar EfficientViT-Seg, ejecutar la búsqueda de hiperparámetros de cada red con el mismo presupuesto y realizar la evaluación final con repeticiones por semilla.</p>
+  </li>
+  <li class="next">
+    <span class="when">Corto plazo</span>
+    <h4>Ampliar el conjunto de datos revisado</h4>
+    <p>Completar la revisión humana de las propuestas de las nuevas campañas para entrenar con más diversidad de fechas, alturas y cámaras.</p>
+  </li>
+  <li class="later">
+    <span class="when">Mediano plazo</span>
+    <h4>Integrar el relieve en las redes</h4>
+    <p>Llevar las capas de terreno, hoy usadas en el pre-etiquetado, a las propias redes mediante la rama de fusión ya prevista en la arquitectura propuesta. Explorar nuevos indicadores, como el índice topográfico de humedad.</p>
+  </li>
+  <li class="later">
+    <span class="when">Mediano plazo</span>
+    <h4>Estimar la profundidad del agua</h4>
+    <p>Usar las mediciones de profundidad tomadas en campo, georreferenciadas, para activar la rama de profundidad y la estimación de incertidumbre.</p>
+  </li>
+  <li class="later">
+    <span class="when">Largo plazo</span>
+    <h4>Escalar a toda la reserva</h4>
+    <p>Aplicar el flujo validado en Pugllohuma al resto de humedales de la Reserva Ecológica Antisana y comparar campañas en el tiempo para seguir la evolución de cada humedal.</p>
+  </li>
+  <li class="later">
+    <span class="when">Largo plazo</span>
+    <h4>Procesamiento en equipos embebidos</h4>
+    <p>Evaluar el uso de las redes ligeras en hardware de bajo consumo, para obtener resultados cerca del lugar de adquisición.</p>
+  </li>
+</ul>
+
+<nav class="pager" id="pager" aria-label="Paginación"></nav>
+<footer class="site-footer">Proyecto de segmentación de humedales altoandinos · Reserva Ecológica Antisana · <span id="year"></span></footer>
+</main>
+
+<aside class="toc" id="toc" aria-label="Índice de la página"></aside>
+</div>
+<script src="assets/js/sitio.js"></script>
+</body>
+</html>

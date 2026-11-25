@@ -1,0 +1,174 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Redes de segmentación · Humedales altoandinos</title>
+<meta name="description" content="Arquitecturas de redes neuronales comparadas en el proyecto y modelo híbrido propuesto.">
+<link rel="icon" href="assets/img/icono.svg" type="image/svg+xml">
+<link rel="stylesheet" href="assets/css/estilo.css">
+<script>(function(){try{var t=localStorage.getItem("tema");if(!t)t=matchMedia("(prefers-color-scheme: dark)").matches?"dark":"light";document.documentElement.setAttribute("data-theme",t);}catch(e){}})();</script>
+</head>
+<body>
+<a class="skip-link" href="#main">Saltar al contenido</a>
+<header class="site-header">
+  <button class="icon-btn menu-btn" id="menu-btn" aria-label="Abrir menú" aria-expanded="false"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M4 7h16M4 12h16M4 17h16"/></svg></button>
+  <a class="brand" href="index.html"><img class="brand-mark" src="assets/img/icono.svg" alt=""><span>Humedales altoandinos<small>Documentación del proyecto</small></span></a>
+  <div class="header-spacer"></div>
+  <button class="icon-btn" id="theme-btn" aria-label="Cambiar tema"></button>
+</header>
+
+<div class="layout">
+<nav class="sidebar" id="sidebar" aria-label="Secciones"></nav>
+
+<main class="content" id="main">
+<div class="eyebrow">04 · Modelos</div>
+<h1>Redes de segmentación</h1>
+<p class="lead">Una vez que existen fotos con máscaras revisadas, se entrenan redes neuronales profundas para que aprendan a producir esas máscaras por sí solas. El proyecto no apuesta por una sola red: compara varias familias de arquitecturas bajo las mismas condiciones.</p>
+
+<h2>Segmentación semántica</h2>
+<p>La <strong>segmentación semántica</strong> consiste en asignar una clase a cada píxel de una imagen. En este proyecto el problema es <strong>binario</strong>: cada píxel es <em>humedal</em> o <em>fondo</em>. La red no devuelve directamente un sí o un no, sino una <strong>probabilidad</strong> entre 0 y 1 para cada píxel; un <strong>umbral</strong> convierte después esa probabilidad en la máscara final.</p>
+
+<h3>La estructura codificador–decodificador</h3>
+<p>Casi todas las redes de segmentación comparten una misma idea. El <strong>codificador</strong> (encoder) reduce progresivamente la imagen para entender <em>qué</em> hay en ella; el <strong>decodificador</strong> (decoder) recupera la resolución para decidir <em>dónde</em> está cada cosa. Las <strong>conexiones de salto</strong> llevan detalle fino del codificador al decodificador para que los bordes no se pierdan.</p>
+
+<figure class="panel">
+  <svg viewBox="0 0 620 220" width="620" role="img" aria-label="Esquema codificador-decodificador con conexiones de salto">
+    <g fill="none" stroke="var(--muted)" stroke-width="1.3" stroke-dasharray="4 3">
+      <path d="M91 45 V20 H529 V45"/>
+      <path d="M139 60 V32 H481 V60"/>
+      <path d="M187 74 V44 H433 V74"/>
+      <path d="M235 86 V56 H385 V86"/>
+    </g>
+    <rect x="10" y="35" width="46" height="150" rx="6" fill="var(--surface-2)" stroke="var(--border)"/>
+    <text x="33" y="114" text-anchor="middle" class="svg-text" font-size="11" font-weight="600">Foto</text>
+    <g fill="var(--sky)">
+      <rect x="76" y="45" width="30" height="130" rx="4"/>
+      <rect x="124" y="60" width="30" height="100" rx="4"/>
+      <rect x="172" y="74" width="30" height="72" rx="4"/>
+      <rect x="220" y="86" width="30" height="48" rx="4"/>
+    </g>
+    <rect x="280" y="95" width="60" height="30" rx="4" fill="var(--accent)"/>
+    <g fill="var(--moss)">
+      <rect x="370" y="86" width="30" height="48" rx="4"/>
+      <rect x="418" y="74" width="30" height="72" rx="4"/>
+      <rect x="466" y="60" width="30" height="100" rx="4"/>
+      <rect x="514" y="45" width="30" height="130" rx="4"/>
+    </g>
+    <rect x="564" y="35" width="46" height="150" rx="6" fill="var(--surface-2)" stroke="var(--border)"/>
+    <text x="587" y="114" text-anchor="middle" class="svg-text" font-size="11" font-weight="600">Salida</text>
+    <text x="163" y="205" text-anchor="middle" class="svg-muted" font-size="12">Codificador: ¿qué hay?</text>
+    <text x="310" y="150" text-anchor="middle" class="svg-muted" font-size="11">cuello</text>
+    <text x="457" y="205" text-anchor="middle" class="svg-muted" font-size="12">Decodificador: ¿dónde está?</text>
+    <text x="310" y="14" text-anchor="middle" class="svg-muted" font-size="11">conexiones de salto</text>
+  </svg>
+  <figcaption>Cada bloque azul reduce el tamaño espacial y aumenta la cantidad de información abstracta; cada bloque verde hace lo contrario. Las líneas discontinuas son las conexiones de salto.</figcaption>
+</figure>
+
+<h3>Aprendizaje por transferencia</h3>
+<p>Ninguna red parte de cero. Los codificadores vienen <strong>preentrenados</strong> con millones de imágenes generales, de modo que ya saben reconocer bordes, texturas y formas. Durante el entrenamiento se aplica un <strong>descongelamiento progresivo</strong>: primero solo aprende el decodificador; después se liberan, por etapas, las capas más profundas del codificador. Así la red se adapta a los humedales sin olvidar lo que ya sabía.</p>
+
+<h2>Conjunto de redes del benchmark</h2>
+<p>Tras revisar la literatura sobre humedales con dron, segmentación de imágenes aéreas y despliegue en hardware embebido, se definió un conjunto de arquitecturas publicadas en dos niveles de tamaño, más el modelo propuesto por el grupo.</p>
+
+<div class="kpis">
+  <div class="kpi"><b>5</b><span>redes de tamaño estándar</span></div>
+  <div class="kpi"><b>2</b><span>redes ligeras para equipos embebidos</span></div>
+  <div class="kpi"><b>1</b><span>modelo híbrido propuesto</span></div>
+  <div class="kpi"><b>2</b><span>redes complementarias</span></div>
+</div>
+
+<h3>Nivel estándar</h3>
+<div class="cards two">
+  <div class="card">
+    <div class="meta"><span class="badge plain">CNN</span><span class="badge plain">Estándar</span></div>
+    <h4>U-Net · codificador ResNet-50</h4>
+    <p>El diseño codificador–decodificador canónico con conexiones de salto en todos los niveles. Es la referencia con la que se comparan las demás.</p>
+  </div>
+  <div class="card">
+    <div class="meta"><span class="badge plain">CNN dilatada</span><span class="badge plain">Estándar</span></div>
+    <h4>DeepLabV3+ · ResNet-50</h4>
+    <p>Usa convoluciones dilatadas que «miran» a varias distancias a la vez sin reducir la imagen, y un módulo que reúne contexto de varias escalas (ASPP). Un decodificador ligero recupera los bordes.</p>
+  </div>
+  <div class="card">
+    <div class="meta"><span class="badge plain">CNN moderna</span><span class="badge plain">Estándar</span></div>
+    <h4>UPerNet · ConvNeXt-T</h4>
+    <p>Un codificador convolucional modernizado con ideas de los transformers, y un decodificador piramidal que fusiona la información de todos los niveles.</p>
+  </div>
+  <div class="card">
+    <div class="meta"><span class="badge plain">Transformer</span><span class="badge plain">Estándar</span></div>
+    <h4>SegFormer · MiT-B2</h4>
+    <p>Un transformer jerárquico con atención eficiente que relaciona regiones lejanas de la imagen. Su decodificador es muy simple: solo capas totalmente conectadas.</p>
+  </div>
+  <div class="card">
+    <div class="meta"><span class="badge plain">Modelo fundacional</span><span class="badge plain">Estándar</span></div>
+    <h4>SAM 2.1 · Hiera-T</h4>
+    <p>Un modelo entrenado para segmentar «cualquier cosa». Su codificador se mantiene congelado y solo se adapta el decodificador de máscaras a los humedales.</p>
+  </div>
+</div>
+
+<h3>Nivel ligero</h3>
+<div class="cards two">
+  <div class="card">
+    <div class="meta"><span class="badge plain">CNN + Transformer</span><span class="badge plain">Ligera</span></div>
+    <h4>UNetFormer · ResNet-18</h4>
+    <p>Diseñada específicamente para imágenes aéreas de dron. Su decodificador combina atención global (contexto) y local (detalle) en ventanas.</p>
+  </div>
+  <div class="card pending">
+    <div class="meta"><span class="badge wait">Pendiente</span><span class="badge plain">Ligera</span></div>
+    <h4>EfficientViT-Seg</h4>
+    <p>Diseñada para hardware embebido, con un tipo de atención cuyo costo crece de forma lineal con el tamaño de la imagen. Su incorporación está pendiente.</p>
+  </div>
+</div>
+
+<h3>Complementarias</h3>
+<p>Dos redes que se evaluaron en fases anteriores quedan como material complementario: <strong>ConvFormer</strong>, porque resultaba redundante con UPerNet (mismo decodificador y tamaño similar), y <strong>SAM-UNet</strong>, porque es una variante del decodificador de SAM con bloques de la U-Net híbrida.</p>
+
+<h2>El modelo propuesto: U-Net híbrida</h2>
+<p>El grupo diseñó una U-Net que combina varias ideas complementarias en una sola arquitectura. Cada bloque cumple una función concreta:</p>
+
+<div class="arch">
+  <div class="layer c-data"><div class="name"><i></i>Entrada RGB</div><div class="desc">Fotografía de tres canales de color, normalizada.</div></div>
+  <div class="link"></div>
+  <div class="layer c-model"><div class="name"><i></i>ResNet-50</div><div class="desc">Codificador preentrenado: extrae rasgos que van de lo simple (bordes, color) a lo complejo (formas, regiones).</div></div>
+  <div class="link"></div>
+  <div class="layer c-model"><div class="name"><i></i>FPN</div><div class="desc">Pirámide de características: combina la información de varios tamaños, porque el agua aparece desde canales de centímetros hasta charcas de metros.</div></div>
+  <div class="link"></div>
+  <div class="layer c-terrain future"><div class="name"><i></i>Fusión con relieve</div><div class="desc">Opcional y desactivada por ahora: atención cruzada con el modelo de superficie para combinar color y forma del terreno.</div></div>
+  <div class="link"></div>
+  <div class="layer c-model"><div class="name"><i></i>CBAM</div><div class="desc">Módulo de atención que pondera <em>qué</em> rasgos son más útiles (atención por canal) y <em>dónde</em> está la información relevante (atención espacial).</div></div>
+  <div class="link"></div>
+  <div class="layer c-model"><div class="name"><i></i>Transformer</div><div class="desc">En el cuello de la red, relaciona regiones distantes de la imagen: por ejemplo, un canal con la charca a la que desemboca.</div></div>
+  <div class="link"></div>
+  <div class="layer c-label"><div class="name"><i></i>Decodificador U-Net</div><div class="desc">Recupera la resolución paso a paso. Sus conexiones de salto tienen <strong>compuertas</strong> que deciden cuánta información del codificador conviene dejar pasar.</div></div>
+  <div class="link"></div>
+  <div class="branches">
+    <div class="layer c-eval"><div class="name"><i></i>Cabeza de segmentación</div><div class="desc">Activa. Produce la probabilidad de humedal en cada píxel.</div></div>
+    <div class="layer c-eval future"><div class="name"><i></i>Cabezas de profundidad e incertidumbre</div><div class="desc">Previstas para una fase futura: profundidad del agua y confianza de la estimación.</div></div>
+  </div>
+</div>
+
+<div class="callout">
+  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="9"/><path d="M12 11v5M12 8h.01" stroke-linecap="round"/></svg>
+  <div><p><strong>Una arquitectura preparada para crecer.</strong> El modelo se concibió como multitarea: además de segmentar el agua, puede estimar su profundidad a partir de mediciones de campo georreferenciadas. En la etapa actual solo está activa la segmentación; las ramas de profundidad, incertidumbre y fusión con relieve se activarán cuando existan suficientes datos de referencia.</p></div>
+</div>
+
+<h2>SAM y el cuidado con la fuga de información</h2>
+<p>SAM necesita una <em>indicación</em> (puntos o un recuadro) para saber qué segmentar. Si esa indicación se tomara de la máscara correcta, el modelo estaría recibiendo la respuesta durante el entrenamiento y sus resultados serían engañosamente buenos. Por eso, en el protocolo principal, <strong>las indicaciones se derivan solo de la imagen</strong>, igual que ocurriría con una foto nueva. La máscara correcta solo se usa para calcular el error.</p>
+
+<h2>Por qué comparar tantas redes</h2>
+<ul>
+  <li><strong>Distintas familias, distintos sesgos:</strong> las redes convolucionales destacan en detalle local; los transformers, en contexto global; los modelos fundacionales, en generalización. No es evidente cuál conviene para el páramo.</li>
+  <li><strong>Precisión frente a costo:</strong> las redes ligeras permiten evaluar si es viable procesar las imágenes en equipos de bajo consumo, cerca del lugar de adquisición.</li>
+  <li><strong>Evidencia para la propuesta:</strong> la U-Net híbrida solo se justifica si se compara, en igualdad de condiciones, con arquitecturas reconocidas.</li>
+</ul>
+
+<nav class="pager" id="pager" aria-label="Paginación"></nav>
+<footer class="site-footer">Proyecto de segmentación de humedales altoandinos · Reserva Ecológica Antisana · <span id="year"></span></footer>
+</main>
+
+<aside class="toc" id="toc" aria-label="Índice de la página"></aside>
+</div>
+<script src="assets/js/sitio.js"></script>
+</body>
+</html>

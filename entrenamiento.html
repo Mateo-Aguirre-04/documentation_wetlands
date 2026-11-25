@@ -1,0 +1,209 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Protocolo de entrenamiento · Humedales altoandinos</title>
+<meta name="description" content="Prueba de diseño, fases experimentales, receta común de entrenamiento y control del sobreajuste.">
+<link rel="icon" href="assets/img/icono.svg" type="image/svg+xml">
+<link rel="stylesheet" href="assets/css/estilo.css">
+<script>(function(){try{var t=localStorage.getItem("tema");if(!t)t=matchMedia("(prefers-color-scheme: dark)").matches?"dark":"light";document.documentElement.setAttribute("data-theme",t);}catch(e){}})();</script>
+</head>
+<body>
+<a class="skip-link" href="#main">Saltar al contenido</a>
+<header class="site-header">
+  <button class="icon-btn menu-btn" id="menu-btn" aria-label="Abrir menú" aria-expanded="false"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M4 7h16M4 12h16M4 17h16"/></svg></button>
+  <a class="brand" href="index.html"><img class="brand-mark" src="assets/img/icono.svg" alt=""><span>Humedales altoandinos<small>Documentación del proyecto</small></span></a>
+  <div class="header-spacer"></div>
+  <button class="icon-btn" id="theme-btn" aria-label="Cambiar tema"></button>
+</header>
+
+<div class="layout">
+<nav class="sidebar" id="sidebar" aria-label="Secciones"></nav>
+
+<main class="content" id="main">
+<div class="eyebrow">05 · Modelos</div>
+<h1>Protocolo de entrenamiento</h1>
+<p class="lead">Comparar redes solo tiene sentido si todas se entrenan en igualdad de condiciones. Esta página describe el experimento controlado que lo garantiza, las fases en que se organizó y los criterios con que se vigila la calidad del aprendizaje.</p>
+
+<h2>La prueba de diseño</h2>
+<p>El entrenamiento se plantea como un <strong>experimento controlado</strong>: el único factor que cambia entre corridas es la <strong>arquitectura</strong> de la red. Los datos, la división en conjuntos, los aumentos, la forma de validar, el criterio de parada y la evaluación son idénticos para todas. Cada red se repite con distintas <strong>semillas</strong> aleatorias para separar las diferencias reales de las debidas al azar.</p>
+
+<div class="cards four">
+  <div class="card"><h4>Un único programa</h4><p>Todas las redes se entrenan con el mismo programa, que importa cada arquitectura sin modificarla.</p></div>
+  <div class="card"><h4>Arquitectura verificable</h4><p>Cada resultado registra el número de parámetros y una huella digital del código de la red, para demostrar que no cambió.</p></div>
+  <div class="card"><h4>Entrenamiento determinista</h4><p>Con la misma semilla, una corrida produce el mismo resultado, lo que permite auditarla y repetirla.</p></div>
+  <div class="card"><h4>Mismo presupuesto</h4><p>La búsqueda de hiperparámetros de cada red dispone del mismo número de intentos.</p></div>
+</div>
+
+<h2>División de los datos</h2>
+<p>Las fotos con máscara revisada se reparten en tres conjuntos con funciones distintas:</p>
+<div class="cards">
+  <div class="card"><span class="card-kicker" style="color:var(--sky)">Entrenamiento</span><h4>Para aprender</h4><p>La red ajusta sus parámetros con estas fotos.</p></div>
+  <div class="card"><span class="card-kicker" style="color:var(--amber)">Validación</span><h4>Para decidir</h4><p>Se usan para elegir la mejor época, el umbral y los hiperparámetros.</p></div>
+  <div class="card"><span class="card-kicker" style="color:var(--rose)">Prueba</span><h4>Para el veredicto final</h4><p>Se guardan sin tocar hasta la evaluación final, para obtener una medida honesta.</p></div>
+</div>
+
+<figure class="panel">
+  <svg viewBox="0 0 560 230" width="560" role="img" aria-label="División de las fotos en bloques espaciales">
+    <g stroke="var(--surface)" stroke-width="3">
+      <rect x="20" y="20" width="100" height="90" fill="var(--sky)" opacity=".22"/>
+      <rect x="120" y="20" width="100" height="90" fill="var(--sky)" opacity=".22"/>
+      <rect x="220" y="20" width="100" height="90" fill="var(--amber)" opacity=".28"/>
+      <rect x="20" y="110" width="100" height="90" fill="var(--rose)" opacity=".25"/>
+      <rect x="120" y="110" width="100" height="90" fill="var(--sky)" opacity=".22"/>
+      <rect x="220" y="110" width="100" height="90" fill="var(--sky)" opacity=".22"/>
+    </g>
+    <g fill="var(--text)" opacity=".55">
+      <circle cx="45" cy="45" r="4"/><circle cx="70" cy="50" r="4"/><circle cx="95" cy="42" r="4"/><circle cx="60" cy="80" r="4"/><circle cx="88" cy="85" r="4"/>
+      <circle cx="145" cy="40" r="4"/><circle cx="172" cy="55" r="4"/><circle cx="198" cy="45" r="4"/><circle cx="160" cy="88" r="4"/>
+      <circle cx="245" cy="48" r="4"/><circle cx="272" cy="40" r="4"/><circle cx="295" cy="70" r="4"/><circle cx="260" cy="88" r="4"/>
+      <circle cx="45" cy="135" r="4"/><circle cx="80" cy="150" r="4"/><circle cx="60" cy="180" r="4"/><circle cx="98" cy="175" r="4"/>
+      <circle cx="148" cy="140" r="4"/><circle cx="185" cy="135" r="4"/><circle cx="170" cy="175" r="4"/><circle cx="200" cy="168" r="4"/>
+      <circle cx="248" cy="138" r="4"/><circle cx="280" cy="150" r="4"/><circle cx="300" cy="182" r="4"/><circle cx="255" cy="178" r="4"/>
+    </g>
+    <g font-size="12.5">
+      <rect x="360" y="40" width="14" height="14" rx="3" fill="var(--sky)" opacity=".5"/><text x="384" y="52" class="svg-text">Bloques de entrenamiento</text>
+      <rect x="360" y="70" width="14" height="14" rx="3" fill="var(--amber)" opacity=".55"/><text x="384" y="82" class="svg-text">Bloque de validación</text>
+      <rect x="360" y="100" width="14" height="14" rx="3" fill="var(--rose)" opacity=".5"/><text x="384" y="112" class="svg-text">Bloque de prueba</text>
+      <circle cx="367" cy="137" r="4" fill="var(--text)" opacity=".55"/><text x="384" y="141" class="svg-text">Posición de una foto</text>
+    </g>
+    <text x="360" y="178" class="svg-muted" font-size="11.5">Las fotos vecinas se solapan, así que</text>
+    <text x="360" y="194" class="svg-muted" font-size="11.5">todo un bloque va al mismo conjunto.</text>
+  </svg>
+  <figcaption>División por bloques espaciales (esquema). Si dos fotos que se solapan cayeran una en entrenamiento y otra en prueba, la red sería evaluada sobre terreno que ya vio, y el resultado sería optimista. Agrupar por zonas evita esa <em>fuga de información</em>.</figcaption>
+</figure>
+
+<h2>Fases del experimento</h2>
+<p>El benchmark se organizó en fases sucesivas. Cada una tiene un objetivo acotado y no avanza a la siguiente sin cumplirlo.</p>
+<ul class="timeline">
+  <li class="done"><span class="when">Fase 0</span><h4>Medición <span class="badge ok">Completada</span></h4><p>Antes de cambiar nada se midió dónde se va el tiempo en cada red: lectura de imágenes, paso de entrenamiento y validación. Se confirmó que las arquitecturas son idénticas a las originales.</p></li>
+  <li class="done"><span class="when">Fase 1</span><h4>Aceleraciones exactas <span class="badge ok">Completada</span></h4><p>Optimizaciones que no alteran ni un solo valor del resultado, verificadas comparando contra el cálculo original.</p></li>
+  <li class="done"><span class="when">Fase 2</span><h4>Aceleraciones aproximadas, medidas <span class="badge ok">Completada</span></h4><p>Optimizaciones que cambian mínimamente el cálculo. Cada una se midió en validación y solo se adoptó si su efecto era despreciable.</p></li>
+  <li class="done"><span class="when">Fase 3</span><h4>Receta común y diagnóstico de sobreajuste <span class="badge ok">Completada</span></h4><p>Todas las redes se entrenaron con la receta refinada. Las ocho entrenadas cumplen el criterio de ausencia de sobreajuste.</p></li>
+  <li class="next"><span class="when">Fase 4</span><h4>Búsqueda de hiperparámetros por red <span class="badge wait">Próxima</span></h4><p>Con todas las redes sin sobreajuste, se buscan los mejores hiperparámetros de cada una con el mismo presupuesto.</p></li>
+  <li class="later"><span class="when">Cierre</span><h4>Evaluación final en el conjunto de prueba <span class="badge off">Pendiente</span></h4><p>Una única medición sobre los datos reservados, con repeticiones por semilla.</p></li>
+</ul>
+
+<h2>La receta común de entrenamiento</h2>
+<p>La primera versión del protocolo reducía cada foto a baja resolución y usaba ajustes fijos. La receta refinada, desarrollada con la U-Net y aplicada después a todas las redes, cambia solo el procedimiento, nunca la arquitectura:</p>
+<div class="versus">
+  <div class="before">
+    <h4>Protocolo inicial</h4>
+    <ul>
+      <li>Foto completa reducida a baja resolución</li>
+      <li>Aumentos de datos mínimos</li>
+      <li>Tasa de aprendizaje constante</li>
+      <li>Se conservan los últimos pesos</li>
+      <li>Validación sobre fotos reducidas</li>
+      <li>Umbral fijo en 0,5</li>
+      <li>Conjunto de datos más pequeño</li>
+    </ul>
+  </div>
+  <div class="after">
+    <h4>Receta refinada</h4>
+    <ul>
+      <li>Parches a <strong>resolución nativa</strong>, la mayoría con humedal</li>
+      <li>Volteos, rotaciones, cambios de escala y de color</li>
+      <li>Calentamiento inicial y descenso suave (coseno)</li>
+      <li><strong>Promedio móvil de pesos</strong> (EMA)</li>
+      <li>Validación en <strong>fotos completas</strong> en cada época</li>
+      <li>Umbral ajustado en validación</li>
+      <li>Esquinas oscuras del lente forzadas a fondo</li>
+    </ul>
+  </div>
+</div>
+
+<h3>Por qué cada cambio</h3>
+<div class="cards two">
+  <div class="card"><h4>Resolución nativa</h4><p>Reducir una foto de muchos megapíxeles borra los canales finos. Entrenar con recortes (parches) a tamaño real conserva ese detalle; priorizar parches con agua evita que la red vea casi solo pajonal.</p></div>
+  <div class="card"><h4>Aumento de datos</h4><p>Girar, voltear, escalar y variar el color de las fotos enseña a la red que el agua es agua sin importar la orientación, la altura de vuelo o la luz del día.</p></div>
+  <div class="card"><h4>Calendario de aprendizaje</h4><p>Un arranque suave evita sacudidas al inicio; el descenso gradual permite afinar los parámetros al final del entrenamiento.</p></div>
+  <div class="card"><h4>Promedio móvil de pesos</h4><p>En lugar de quedarse con el último estado de la red, se usa un promedio de los estados recientes, que generaliza mejor y es más estable.</p></div>
+  <div class="card"><h4>Validación realista</h4><p>Se valida exactamente como se usará la red: sobre la foto completa, recorrida por teselas a resolución original.</p></div>
+  <div class="card"><h4>Esquinas del lente</h4><p>El viñeteado del lente produce esquinas negras que podrían confundirse con agua; se marcan siempre como fondo.</p></div>
+</div>
+
+<h2>El ciclo de entrenamiento</h2>
+<p>El entrenamiento avanza por <strong>épocas</strong>. En cada una, la red recorre los datos de entrenamiento en pequeños grupos (lotes) y repite este ciclo:</p>
+<div class="pipeline wide">
+  <div class="step c-data"><span class="n">1</span><h4>Lote</h4><p>Se toma un grupo de parches con sus máscaras.</p></div>
+  <span class="arrow"></span>
+  <div class="step c-model"><span class="n">2</span><h4>Predicción</h4><p>La red estima la probabilidad de agua en cada píxel.</p></div>
+  <span class="arrow"></span>
+  <div class="step c-eval"><span class="n">3</span><h4>Pérdida</h4><p>Se mide cuánto se aleja la predicción de la máscara.</p></div>
+  <span class="arrow"></span>
+  <div class="step c-label"><span class="n">4</span><h4>Ajuste</h4><p>Los parámetros se corrigen en la dirección que reduce el error.</p></div>
+  <span class="arrow"></span>
+  <div class="step c-terrain"><span class="n">5</span><h4>Validación</h4><p>Al final de la época se evalúa en fotos completas y se guarda el mejor modelo.</p></div>
+</div>
+
+<h3>Función de pérdida</h3>
+<p>La <strong>pérdida</strong> es el número que la red intenta minimizar. Se combinan dos medidas complementarias:</p>
+<ul>
+  <li><strong>Entropía cruzada:</strong> evalúa cada píxel por separado y penaliza más cuanto más seguro estaba la red de una respuesta equivocada.</li>
+  <li><strong>Pérdida Dice:</strong> evalúa la coincidencia de las zonas en conjunto. Es importante porque el agua ocupa una fracción pequeña de cada foto; sin ella, la red podría «acertar» casi todo prediciendo solo fondo.</li>
+</ul>
+
+<h3>Parada anticipada</h3>
+<p>Si la calidad en validación deja de mejorar durante varias épocas seguidas, el entrenamiento se detiene y se conserva el modelo de la mejor época. Así se ahorra tiempo de cómputo y se evita seguir entrenando cuando la red ya solo memoriza.</p>
+
+<h2>Diagnóstico de sobreajuste</h2>
+<p>Una red <strong>sobreajustada</strong> memoriza las fotos de entrenamiento en lugar de aprender reglas generales: su error sigue bajando en entrenamiento mientras empeora en fotos nuevas. Antes de comparar redes hay que asegurar que ninguna está en esa situación.</p>
+
+<figure class="panel">
+  <svg viewBox="0 0 560 200" width="560" role="img" aria-label="Curvas de pérdida de un entrenamiento sano y de uno sobreajustado">
+    <g font-size="12">
+      <text x="135" y="18" text-anchor="middle" class="svg-text" font-weight="600">Entrenamiento sano</text>
+      <text x="420" y="18" text-anchor="middle" class="svg-text" font-weight="600">Sobreajuste</text>
+    </g>
+    <g stroke="var(--border)" stroke-width="1.5" fill="none">
+      <path d="M30 30 V165 H250"/><path d="M315 30 V165 H535"/>
+    </g>
+    <path d="M32 50 C 70 110, 110 135, 160 142 S 230 148, 248 149" fill="none" stroke="var(--sky)" stroke-width="2.5"/>
+    <path d="M32 58 C 70 112, 110 132, 160 138 S 230 141, 248 141" fill="none" stroke="var(--amber)" stroke-width="2.5" stroke-dasharray="6 4"/>
+    <path d="M317 50 C 355 110, 395 135, 445 146 S 515 155, 533 157" fill="none" stroke="var(--sky)" stroke-width="2.5"/>
+    <path d="M317 58 C 350 105, 380 120, 410 118 S 480 95, 533 80" fill="none" stroke="var(--amber)" stroke-width="2.5" stroke-dasharray="6 4"/>
+    <circle cx="410" cy="118" r="4" fill="var(--rose)"/>
+    <text x="400" y="138" class="svg-muted" font-size="11" text-anchor="middle">mínimo de validación</text>
+    <g font-size="11.5">
+      <text x="30" y="185" class="svg-muted">épocas →</text><text x="315" y="185" class="svg-muted">épocas →</text>
+      <line x1="150" y1="188" x2="172" y2="188" stroke="var(--sky)" stroke-width="2.5"/><text x="178" y="192" class="svg-text">entrenamiento</text>
+      <line x1="430" y1="188" x2="452" y2="188" stroke="var(--amber)" stroke-width="2.5" stroke-dasharray="6 4"/><text x="458" y="192" class="svg-text">validación</text>
+    </g>
+  </svg>
+  <figcaption>Esquema ilustrativo de las curvas de pérdida. A la izquierda, ambas bajan y se mantienen próximas. A la derecha, la pérdida de validación toca un mínimo y luego sube mientras la de entrenamiento sigue bajando: la red empieza a memorizar.</figcaption>
+</figure>
+
+<p>Una corrida se considera <strong>sin sobreajuste</strong> solo si cumple dos condiciones a la vez:</p>
+<ol>
+  <li><strong>Brecha acotada:</strong> la pérdida en validación no supera en más de un margen pequeño a la de entrenamiento, tanto en la mejor época como al final del entrenamiento.</li>
+  <li><strong>Sin tendencia al alza:</strong> la curva de validación, suavizada, no vuelve a subir de forma apreciable después de alcanzar su mínimo.</li>
+</ol>
+<p>El criterio se validó primero con corridas de comportamiento conocido: clasificó correctamente una red sana y otra que sí estaba sobreajustada.</p>
+
+<h2>Optimización del cómputo</h2>
+<p>Entrenar varias redes sobre fotos de alta resolución es costoso. Se aplicaron optimizaciones con una regla estricta: <strong>ninguna puede cambiar la arquitectura</strong>, y las que alteran mínimamente el cálculo deben medirse antes de adoptarse.</p>
+<div class="table-wrap">
+<table>
+  <thead><tr><th>Optimización</th><th>Qué hace</th><th>Efecto en el resultado</th></tr></thead>
+  <tbody>
+    <tr><td>Caché de imágenes decodificadas</td><td>Guarda las fotos ya descomprimidas para no decodificarlas en cada época.</td><td>Ninguno (píxeles idénticos, verificado)</td></tr>
+    <tr><td>Predicción en la tarjeta gráfica</td><td>Recorre las teselas de la foto completa sin sacar los datos de la GPU.</td><td>Ninguno (diferencia nula)</td></tr>
+    <tr><td>Formato de memoria optimizado</td><td>Reordena los datos en memoria para que la GPU los procese más rápido.</td><td>Ninguno</td></tr>
+    <tr><td>Sub-lotes con acumulación</td><td>Divide un lote que no cabe en memoria en partes y suma sus correcciones.</td><td>Mismo lote efectivo</td></tr>
+    <tr><td>Menor solape al validar cada época</td><td>Acelera la validación intermedia; la evaluación final usa el solape completo.</td><td>Despreciable (medido)</td></tr>
+    <tr><td>Ponderación gaussiana de teselas</td><td>Da más peso al centro de cada tesela al combinar.</td><td>Sin mejora: descartada</td></tr>
+  </tbody>
+</table>
+</div>
+
+<nav class="pager" id="pager" aria-label="Paginación"></nav>
+<footer class="site-footer">Proyecto de segmentación de humedales altoandinos · Reserva Ecológica Antisana · <span id="year"></span></footer>
+</main>
+
+<aside class="toc" id="toc" aria-label="Índice de la página"></aside>
+</div>
+<script src="assets/js/sitio.js"></script>
+</body>
+</html>

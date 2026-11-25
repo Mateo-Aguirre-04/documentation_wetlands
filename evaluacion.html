@@ -1,0 +1,142 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Predicción y evaluación · Humedales altoandinos</title>
+<meta name="description" content="Cómo se aplica una red entrenada a una foto completa y cómo se mide la calidad de sus máscaras.">
+<link rel="icon" href="assets/img/icono.svg" type="image/svg+xml">
+<link rel="stylesheet" href="assets/css/estilo.css">
+<script>(function(){try{var t=localStorage.getItem("tema");if(!t)t=matchMedia("(prefers-color-scheme: dark)").matches?"dark":"light";document.documentElement.setAttribute("data-theme",t);}catch(e){}})();</script>
+</head>
+<body>
+<a class="skip-link" href="#main">Saltar al contenido</a>
+<header class="site-header">
+  <button class="icon-btn menu-btn" id="menu-btn" aria-label="Abrir menú" aria-expanded="false"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M4 7h16M4 12h16M4 17h16"/></svg></button>
+  <a class="brand" href="index.html"><img class="brand-mark" src="assets/img/icono.svg" alt=""><span>Humedales altoandinos<small>Documentación del proyecto</small></span></a>
+  <div class="header-spacer"></div>
+  <button class="icon-btn" id="theme-btn" aria-label="Cambiar tema"></button>
+</header>
+
+<div class="layout">
+<nav class="sidebar" id="sidebar" aria-label="Secciones"></nav>
+
+<main class="content" id="main">
+<div class="eyebrow">06 · Modelos</div>
+<h1>Predicción y evaluación</h1>
+<p class="lead">Una red entrenada debe producir máscaras sobre fotos que nunca ha visto. Esta página explica cómo se aplica a una fotografía completa y con qué métricas se juzga si su resultado es bueno.</p>
+
+<h2>Predicción sobre una foto completa</h2>
+<p>Las fotografías del dron son demasiado grandes para procesarlas de una sola vez en la memoria de la tarjeta gráfica, y reducirlas haría desaparecer los canales finos. Por eso la foto se recorre por <strong>teselas</strong> (recortes cuadrados) a su resolución original.</p>
+
+<figure class="panel">
+  <svg viewBox="0 0 560 240" width="560" role="img" aria-label="Recorrido de una foto por teselas solapadas">
+    <rect x="20" y="20" width="300" height="200" rx="4" fill="var(--moss)" opacity=".15" stroke="var(--border)"/>
+    <path d="M60 70c15-25 70-30 95-12s20 55-12 62-95-20-83-50z" fill="var(--accent)" opacity=".35"/>
+    <path d="M150 90C190 100 215 130 250 150" stroke="var(--accent)" stroke-opacity=".5" stroke-width="5" fill="none" stroke-linecap="round"/>
+    <path d="M235 140c10-14 45-14 52 4s-12 30-30 28-30-18-22-32z" fill="var(--accent)" opacity=".35"/>
+    <g fill="none" stroke="var(--muted)" stroke-width="1.2" stroke-dasharray="5 4">
+      <rect x="20" y="20" width="110" height="110"/><rect x="115" y="20" width="110" height="110"/><rect x="210" y="20" width="110" height="110"/>
+      <rect x="20" y="110" width="110" height="110"/><rect x="115" y="110" width="110" height="110"/><rect x="210" y="110" width="110" height="110"/>
+    </g>
+    <rect x="115" y="20" width="110" height="110" fill="var(--amber)" opacity=".14" stroke="var(--amber)" stroke-width="2.2"/>
+    <rect x="115" y="20" width="15" height="110" fill="var(--rose)" opacity=".25"/>
+    <rect x="210" y="20" width="15" height="110" fill="var(--rose)" opacity=".25"/>
+    <g font-size="12.5">
+      <rect x="350" y="40" width="14" height="14" rx="2" fill="none" stroke="var(--muted)" stroke-dasharray="4 3"/><text x="374" y="52" class="svg-text">Tesela a resolución original</text>
+      <rect x="350" y="72" width="14" height="14" rx="2" fill="var(--amber)" opacity=".4" stroke="var(--amber)"/><text x="374" y="84" class="svg-text">Tesela en proceso</text>
+      <rect x="350" y="104" width="14" height="14" rx="2" fill="var(--rose)" opacity=".35"/><text x="374" y="116" class="svg-text">Zona de solape</text>
+    </g>
+    <text x="350" y="160" class="svg-muted" font-size="11.5">En las zonas de solape se combinan</text>
+    <text x="350" y="176" class="svg-muted" font-size="11.5">las predicciones de varias teselas,</text>
+    <text x="350" y="192" class="svg-muted" font-size="11.5">lo que elimina las costuras en los bordes.</text>
+  </svg>
+  <figcaption>Esquema de la predicción por teselas solapadas. Cada tesela produce un mapa de probabilidad; los mapas se ensamblan en uno solo del tamaño de la foto.</figcaption>
+</figure>
+
+<div class="pipeline wide">
+  <div class="step c-data"><span class="n">1</span><h4>Foto nueva</h4><p>Resolución original, sin reducir.</p></div>
+  <span class="arrow"></span>
+  <div class="step c-model"><span class="n">2</span><h4>Teselas solapadas</h4><p>La red procesa cada recorte.</p></div>
+  <span class="arrow"></span>
+  <div class="step c-model"><span class="n">3</span><h4>Mapa de probabilidad</h4><p>Se combinan las teselas en un mapa continuo.</p></div>
+  <span class="arrow"></span>
+  <div class="step c-terrain"><span class="n">4</span><h4>Umbral</h4><p>Se aplica el umbral elegido en validación.</p></div>
+  <span class="arrow"></span>
+  <div class="step c-label"><span class="n">5</span><h4>Máscara y superposición</h4><p>Esquinas del lente a fondo; resultado listo para revisar.</p></div>
+</div>
+
+<p>Las redes pueden aplicarse a una sola imagen o a una carpeta completa, y el modelo de segmentación puede exportarse a un formato portable para ejecutarlo fuera del entorno de entrenamiento.</p>
+
+<h2>Cómo se compara una máscara con la referencia</h2>
+<p>Para medir la calidad, la máscara predicha se superpone con la máscara revisada (la referencia) y cada píxel cae en una de cuatro categorías:</p>
+
+<figure class="panel">
+  <svg viewBox="0 0 560 230" width="560" role="img" aria-label="Diagrama de verdaderos positivos, falsos positivos y falsos negativos">
+    <rect x="10" y="10" width="540" height="190" rx="10" fill="var(--surface-2)"/>
+    <circle cx="215" cy="105" r="80" fill="var(--moss)" opacity=".28"/>
+    <circle cx="335" cy="105" r="80" fill="var(--accent)" opacity=".28"/>
+    <circle cx="215" cy="105" r="80" fill="none" stroke="var(--moss)" stroke-width="2"/>
+    <circle cx="335" cy="105" r="80" fill="none" stroke="var(--accent)" stroke-width="2"/>
+    <text x="170" y="100" text-anchor="middle" class="svg-text" font-size="13" font-weight="700">FN</text>
+    <text x="170" y="117" text-anchor="middle" class="svg-muted" font-size="11">agua no detectada</text>
+    <text x="275" y="100" text-anchor="middle" class="svg-text" font-size="13" font-weight="700">VP</text>
+    <text x="275" y="117" text-anchor="middle" class="svg-muted" font-size="11">acierto</text>
+    <text x="380" y="100" text-anchor="middle" class="svg-text" font-size="13" font-weight="700">FP</text>
+    <text x="380" y="117" text-anchor="middle" class="svg-muted" font-size="11">falsa alarma</text>
+    <text x="490" y="40" text-anchor="middle" class="svg-text" font-size="13" font-weight="700">VN</text>
+    <text x="490" y="56" text-anchor="middle" class="svg-muted" font-size="11">fondo correcto</text>
+    <text x="150" y="220" text-anchor="middle" class="svg-text" font-size="12" font-weight="600" fill="var(--moss)">Referencia (máscara revisada)</text>
+    <text x="400" y="220" text-anchor="middle" class="svg-text" font-size="12" font-weight="600">Predicción de la red</text>
+  </svg>
+  <figcaption>VP: verdaderos positivos · FP: falsos positivos · FN: falsos negativos · VN: verdaderos negativos. Como el fondo ocupa la mayor parte de cada foto, las métricas útiles se centran en VP, FP y FN.</figcaption>
+</figure>
+
+<h2>Métricas</h2>
+<div class="cards two">
+  <div class="card"><span class="card-kicker">Métrica principal</span><h4>IoU · intersección sobre unión</h4><p>Área de acierto dividida entre el área total marcada por la red o por la referencia: VP / (VP + FP + FN). Vale 1 si las máscaras coinciden exactamente y 0 si no se tocan. Es la métrica con la que se eligen los modelos.</p></div>
+  <div class="card"><span class="card-kicker">Coincidencia</span><h4>Dice / F1</h4><p>Medida de coincidencia muy relacionada con el IoU, que pondera más los aciertos. Equivale al F1, la media armónica entre precisión y exhaustividad.</p></div>
+  <div class="card"><span class="card-kicker">Fiabilidad</span><h4>Precisión</h4><p>De todo lo que la red marcó como agua, qué fracción realmente lo es. Baja cuando hay muchas falsas alarmas (turba, sombras, caminos).</p></div>
+  <div class="card"><span class="card-kicker">Cobertura</span><h4>Exhaustividad (recall)</h4><p>De toda el agua real, qué fracción encontró la red. Baja cuando se escapan charcas o canales.</p></div>
+  <div class="card"><span class="card-kicker">Topología</span><h4>clDice</h4><p>Mide si se conserva el «esqueleto» de las estructuras alargadas. Un canal cortado en dos apenas cambia el IoU, pero sí reduce el clDice. Es clave para la red de canales del humedal.</p></div>
+  <div class="card"><span class="card-kicker">Estructuras finas</span><h4>Recall de estructuras finas</h4><p>Exhaustividad calculada solo sobre las partes delgadas de la referencia (canales). Revela si un método detecta charcas pero ignora los canales.</p></div>
+</div>
+
+<div class="callout">
+  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="9"/><path d="M12 11v5M12 8h.01" stroke-linecap="round"/></svg>
+  <div><p><strong>Precisión y exhaustividad tiran en direcciones opuestas.</strong> Bajar el umbral hace que la red marque más agua: sube la exhaustividad pero baja la precisión. Por eso el umbral no se fija de antemano, sino que se ajusta en validación para obtener el mejor equilibrio.</p></div>
+</div>
+
+<h3>Medidas globales y por imagen</h3>
+<p>Las métricas se calculan de dos maneras. La <strong>global</strong> suma todos los píxeles de todas las fotos, por lo que las fotos con mucha agua pesan más. La <strong>media por imagen</strong> calcula la métrica en cada foto y luego promedia, de modo que cada foto cuenta igual. Reportar ambas evita que unas pocas fotos fáciles oculten un mal desempeño en las difíciles. También se analizan los <strong>bordes</strong> por separado, porque un desplazamiento pequeño del contorno es un error distinto de no detectar una charca.</p>
+
+<h3>Comparaciones con respaldo estadístico</h3>
+<p>Cuando dos métodos se diferencian poco, se comparan <strong>foto por foto</strong>: cuántas fotos mejoran, cuántas empeoran y cuál es la diferencia media, con un <strong>intervalo de confianza</strong> calculado por remuestreo (bootstrap). Una mejora solo se da por buena si el intervalo no incluye el cero.</p>
+
+<h2>Costo computacional</h2>
+<p>Además de la calidad, se mide cuánto cuesta usar cada red, porque una red muy precisa pero lenta puede no ser práctica en campo:</p>
+<div class="cards four">
+  <div class="card"><h4>Tamaño</h4><p>Número de parámetros de la red.</p></div>
+  <div class="card"><h4>Latencia</h4><p>Tiempo para procesar una tesela y una foto completa.</p></div>
+  <div class="card"><h4>Rendimiento</h4><p>Imágenes procesadas por segundo.</p></div>
+  <div class="card"><h4>Memoria</h4><p>Memoria de la tarjeta gráfica necesaria durante la predicción.</p></div>
+</div>
+
+<h2>Informes que produce cada experimento</h2>
+<ul>
+  <li><strong>Curvas de entrenamiento:</strong> pérdida y métricas de validación por época, con la mejor época señalada.</li>
+  <li><strong>Matriz de confusión:</strong> resumen de VP, FP, FN y VN.</li>
+  <li><strong>Figuras comparativas:</strong> foto, referencia y predicción lado a lado, y mapas de aciertos, falsas alarmas y omisiones en colores distintos.</li>
+  <li><strong>Diagnóstico de sobreajuste:</strong> curvas suavizadas y veredicto del criterio.</li>
+  <li><strong>Registro de configuración y entorno:</strong> todo lo necesario para repetir el experimento.</li>
+</ul>
+
+<nav class="pager" id="pager" aria-label="Paginación"></nav>
+<footer class="site-footer">Proyecto de segmentación de humedales altoandinos · Reserva Ecológica Antisana · <span id="year"></span></footer>
+</main>
+
+<aside class="toc" id="toc" aria-label="Índice de la página"></aside>
+</div>
+<script src="assets/js/sitio.js"></script>
+</body>
+</html>

@@ -1,0 +1,244 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Etiquetado de máscaras · Humedales altoandinos</title>
+<meta name="description" content="Cómo se crean y revisan las máscaras de agua que sirven para entrenar las redes.">
+<link rel="icon" href="assets/img/icono.svg" type="image/svg+xml">
+<link rel="stylesheet" href="assets/css/estilo.css">
+<script>(function(){try{var t=localStorage.getItem("tema");if(!t)t=matchMedia("(prefers-color-scheme: dark)").matches?"dark":"light";document.documentElement.setAttribute("data-theme",t);}catch(e){}})();</script>
+</head>
+<body>
+<a class="skip-link" href="#main">Saltar al contenido</a>
+<header class="site-header">
+  <button class="icon-btn menu-btn" id="menu-btn" aria-label="Abrir menú" aria-expanded="false"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M4 7h16M4 12h16M4 17h16"/></svg></button>
+  <a class="brand" href="index.html"><img class="brand-mark" src="assets/img/icono.svg" alt=""><span>Humedales altoandinos<small>Documentación del proyecto</small></span></a>
+  <div class="header-spacer"></div>
+  <button class="icon-btn" id="theme-btn" aria-label="Cambiar tema"></button>
+</header>
+
+<div class="layout">
+<nav class="sidebar" id="sidebar" aria-label="Secciones"></nav>
+
+<main class="content" id="main">
+<div class="eyebrow">02 · Datos</div>
+<h1>Etiquetado de máscaras</h1>
+<p class="lead">Una red neuronal aprende a reconocer el agua a partir de ejemplos. Cada ejemplo es una foto acompañada de su máscara: el dibujo exacto de dónde está el agua. Esta página explica cómo se producen esas máscaras de forma rápida sin sacrificar su calidad.</p>
+
+<h2>Qué es una máscara</h2>
+<p>Una <strong>máscara de segmentación</strong> es una imagen del mismo tamaño que la fotografía en la que cada píxel tiene una de dos etiquetas: <strong>0 = fondo</strong> (vegetación, suelo, turba, sombras) o <strong>1 = humedal</strong> (agua visible, charcas y canales). Para revisarla se genera además una <strong>superposición</strong>: la foto original con la máscara pintada encima en un color semitransparente.</p>
+
+<figure class="panel">
+  <div class="trio">
+    <div>
+      <div class="frame">
+        <svg viewBox="0 0 240 180" aria-hidden="true">
+          <defs><radialGradient id="vig" cx="50%" cy="50%" r="70%"><stop offset="65%" stop-color="#000" stop-opacity="0"/><stop offset="100%" stop-color="#000" stop-opacity=".45"/></radialGradient></defs>
+          <rect width="240" height="180" fill="#968f60"/>
+          <ellipse cx="190" cy="40" rx="50" ry="22" fill="#a8a072"/><ellipse cx="50" cy="150" rx="60" ry="24" fill="#857f52"/><ellipse cx="200" cy="150" rx="30" ry="14" fill="#7d7a4c"/>
+          <path d="M40 60c10-20 50-25 70-10s15 45-10 50-70-15-60-40z" fill="#2a3637"/>
+          <path d="M150 95c8-12 35-12 40 4s-10 26-24 24-22-16-16-28z" fill="#33423f"/>
+          <path d="M106 80C128 84 138 100 156 106" stroke="#2f3b3b" stroke-width="4" fill="none" stroke-linecap="round"/>
+          <path d="M60 64c8-8 22-8 30-2" stroke="#7c97a3" stroke-width="3" fill="none" opacity=".6"/>
+          <rect width="240" height="180" fill="url(#vig)"/>
+        </svg>
+      </div>Fotografía</div>
+    <div>
+      <div class="frame">
+        <svg viewBox="0 0 240 180" aria-hidden="true">
+          <rect width="240" height="180" fill="#111"/>
+          <path d="M40 60c10-20 50-25 70-10s15 45-10 50-70-15-60-40z" fill="#fff"/>
+          <path d="M150 95c8-12 35-12 40 4s-10 26-24 24-22-16-16-28z" fill="#fff"/>
+          <path d="M106 80C128 84 138 100 156 106" stroke="#fff" stroke-width="4" fill="none" stroke-linecap="round"/>
+        </svg>
+      </div>Máscara (blanco = humedal)</div>
+    <div>
+      <div class="frame">
+        <svg viewBox="0 0 240 180" aria-hidden="true">
+          <rect width="240" height="180" fill="#968f60"/>
+          <ellipse cx="190" cy="40" rx="50" ry="22" fill="#a8a072"/><ellipse cx="50" cy="150" rx="60" ry="24" fill="#857f52"/><ellipse cx="200" cy="150" rx="30" ry="14" fill="#7d7a4c"/>
+          <path d="M40 60c10-20 50-25 70-10s15 45-10 50-70-15-60-40z" fill="#2a3637"/>
+          <path d="M150 95c8-12 35-12 40 4s-10 26-24 24-22-16-16-28z" fill="#33423f"/>
+          <g fill="#20d36a" opacity=".55">
+            <path d="M40 60c10-20 50-25 70-10s15 45-10 50-70-15-60-40z"/>
+            <path d="M150 95c8-12 35-12 40 4s-10 26-24 24-22-16-16-28z"/>
+          </g>
+          <path d="M106 80C128 84 138 100 156 106" stroke="#20d36a" stroke-opacity=".8" stroke-width="4" fill="none" stroke-linecap="round"/>
+          <rect width="240" height="180" fill="url(#vig)"/>
+        </svg>
+      </div>Superposición para revisión</div>
+  </div>
+  <figcaption>Ilustración esquemática. Las charcas son fáciles de ver; los canales finos que las conectan son la parte más difícil de etiquetar y de detectar.</figcaption>
+</figure>
+
+<h2>Flujo híbrido: máquina propone, persona decide</h2>
+<p>Dibujar a mano cada charca y cada canal en fotografías de muchos megapíxeles llevaría semanas. Por eso el etiquetado combina dos etapas: un <strong>pre-etiquetado automático</strong> que propone una primera máscara y una <strong>revisión humana</strong> que la corrige. La persona ya no parte de cero: solo agrega lo que falta y borra lo que sobra.</p>
+
+<div class="vflow">
+  <div class="node c-data"><strong>Fotografías del dron</strong><span>Copias de trabajo; los originales no se tocan</span></div>
+  <div class="down"></div>
+  <div class="node c-label"><strong>Pre-etiquetado automático</strong><span>Propone una máscara y marca las fotos dudosas</span></div>
+  <div class="down"></div>
+  <div class="node c-label dashed"><strong>Máscara propuesta</strong><span>Registrada como «generada automáticamente»: aún no sirve para entrenar</span></div>
+  <div class="down"></div>
+  <div class="decision">Revisión humana: ¿es correcta?</div>
+  <div class="split">
+    <div class="col"><div class="down label"><span class="lbl">Sí</span></div><div class="node"><strong>Se acepta</strong><span>Sin cambios</span></div></div>
+    <div class="col"><div class="down label"><span class="lbl">No</span></div><div class="node"><strong>Se corrige</strong><span>Agregar zonas que faltan · borrar zonas incorrectas</span></div></div>
+  </div>
+  <div class="down"></div>
+  <div class="node key c-model"><strong>Máscara revisada</strong><span>Se registra como revisada y pasa al conjunto de entrenamiento</span></div>
+</div>
+
+<div class="callout green">
+  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"/></svg>
+  <div><p><strong>Separación estricta entre propuestas y etiquetas revisadas.</strong> El sistema lleva dos registros independientes: uno de máscaras revisadas por personas y otro de máscaras generadas automáticamente. Las redes y el propio pre-etiquetador solo aprenden de las primeras. Así se evita que el sistema aprenda de sus propios errores.</p></div>
+</div>
+
+<h2>Herramientas de revisión manual</h2>
+<p>Las herramientas de revisión son aplicaciones de escritorio con interfaz gráfica. Han evolucionado en tres generaciones, y todas comparten la misma organización de carpetas (imágenes, máscaras, superposiciones y metadatos), por lo que se puede pasar de una a otra sobre el mismo conjunto de datos.</p>
+
+<div class="cards">
+  <div class="card">
+    <span class="card-kicker">Generación 1</span>
+    <h4>Etiquetador por polígonos</h4>
+    <p>La persona marca los vértices del contorno de cada zona de agua. Permite borrar polígonos o áreas completas con un recuadro y retomar el trabajo donde se dejó.</p>
+  </div>
+  <div class="card">
+    <span class="card-kicker">Generación 2</span>
+    <h4>Etiquetador asistido por SAM 2</h4>
+    <p>La persona hace clic sobre la charca y un modelo fundacional de segmentación (SAM 2) dibuja el contorno. Ofrece varias máscaras candidatas para elegir la mejor.</p>
+  </div>
+  <div class="card">
+    <span class="card-kicker">Generación 3 · actual</span>
+    <h4>Etiquetador híbrido</h4>
+    <p>Une la asistencia de SAM 2 con herramientas de dibujo manual sobre una única capa editable, con deshacer y rehacer. Funciona también sin GPU, en modo solo manual.</p>
+  </div>
+</div>
+
+<h3>Herramientas del etiquetador híbrido</h3>
+<div class="tools">
+  <div class="tool"><strong><kbd>S</kbd> SAM</strong><span>Puntos positivos (es agua) y negativos (no es agua), o un recuadro, para que el modelo trace el contorno.</span></div>
+  <div class="tool"><strong><kbd>B</kbd> Pincel</strong><span>Pintar o borrar a mano alzada; el tamaño se ajusta con la rueda del ratón.</span></div>
+  <div class="tool"><strong><kbd>E</kbd> Borrador</strong><span>Eliminar regiones que se marcaron por error.</span></div>
+  <div class="tool"><strong><kbd>L</kbd> Lazo</strong><span>Rodear un contorno a mano alzada para rellenarlo o borrarlo de una vez.</span></div>
+  <div class="tool"><strong><kbd>W</kbd> Varita</strong><span>Seleccionar una región de color similar, con tolerancia ajustable.</span></div>
+  <div class="tool"><strong>Deshacer / rehacer</strong><span>Todas las ediciones son reversibles hasta que se guarda en disco.</span></div>
+</div>
+
+<p class="small muted">Al guardar se escriben la máscara final y una nueva superposición, y la foto queda marcada como revisada. El progreso se conserva entre sesiones, de modo que el trabajo puede repartirse en varios días.</p>
+
+<h2>Evolución del pre-etiquetado automático</h2>
+<p>El pre-etiquetador es el componente que más ha evolucionado. Cada versión nació de los errores observados en la anterior.</p>
+
+<ul class="timeline">
+  <li class="done">
+    <h4>Versión 1 · Reglas de color + SAM 2 <span class="badge off">Referencia</span></h4>
+    <p>Busca zonas candidatas con reglas fijas de color y forma, coloca puntos dentro de cada candidata y pide a SAM 2 una máscara para cada una. Luego une las máscaras, limpia regiones pequeñas y guarda el resultado. Su punto débil: las reglas fijas no se adaptan a cambios de luz o de cámara, y las esquinas oscuras del lente se confundían con agua.</p>
+  </li>
+  <li class="done">
+    <h4>Versión 2 · Modelo aprendido de color y textura <span class="badge off">Referencia</span></h4>
+    <p>Sustituye las reglas fijas por un modelo que <em>aprende</em> de las máscaras revisadas. Clave: en estas fotos el agua se distingue sobre todo porque es <strong>lisa</strong> frente al pajonal rugoso. Ignora el viñeteado, analiza cada foto a la misma escala física según su altura, y usa SAM 2 solo para afinar bordes, descartando su resultado cuando no coincide con la detección. Genera un informe que señala qué fotos conviene revisar primero.</p>
+  </li>
+  <li class="done">
+    <h4>Versión 3 · Forma, topología y aprendizaje por gradiente <span class="badge ok">Actual</span></h4>
+    <p>Añade descriptores matemáticos de forma pensados para encontrar <strong>canales finos</strong>, un clasificador más potente y un postproceso que respeta la continuidad de los canales. Mejora de forma clara a las versiones anteriores en coincidencia de área y, sobre todo, en continuidad de canales.</p>
+  </li>
+  <li class="done">
+    <h4>Versión 3 + terreno <span class="badge ok">Opcional</span></h4>
+    <p>Incorpora capas de relieve derivadas por fotogrametría. Aporta una mejora pequeña pero consistente en los vuelos de mayor resolución. Ver <a href="terreno.html">Información del terreno</a>.</p>
+  </li>
+</ul>
+
+<h2>Cómo funciona la versión 3</h2>
+<p>La versión actual procesa cada fotografía en cinco pasos. Todo se ejecuta en procesador (CPU); solo el refinamiento opcional con SAM 2 usa la tarjeta gráfica.</p>
+
+<div class="pipeline wide">
+  <div class="step c-data"><span class="n">Paso 1</span><h4>Normalizar</h4><p>Corregir iluminación y equilibrar el color de cada foto.</p></div>
+  <span class="arrow"></span>
+  <div class="step c-label"><span class="n">Paso 2</span><h4>Describir</h4><p>Calcular decenas de descriptores por píxel: textura, forma, contraste.</p></div>
+  <span class="arrow"></span>
+  <div class="step c-model"><span class="n">Paso 3</span><h4>Clasificar</h4><p>Estimar la probabilidad de agua en cada píxel.</p></div>
+  <span class="arrow"></span>
+  <div class="step c-terrain"><span class="n">Paso 4</span><h4>Postprocesar</h4><p>Ajustar bordes y conservar canales conectados.</p></div>
+  <span class="arrow"></span>
+  <div class="step c-eval optional"><span class="n">Opcional</span><h4>Refinar</h4><p>SAM 2 afina el contorno de charcas compactas.</p></div>
+</div>
+
+<h3>Paso 1 · Normalización</h3>
+<p><strong>Corrección de iluminación:</strong> se estima cómo varía la luz a gran escala en la foto (viñeteado, sombras suaves de nubes) y se divide por esa estimación. Lo que queda es la <em>oscuridad relativa</em>: una charca es más oscura que lo que la rodea, aunque toda la foto esté en sombra. <strong>Normalización de color:</strong> los tonos se centran en el valor típico de cada foto, lo que reduce las diferencias entre cámaras y fechas distintas.</p>
+
+<h3>Paso 2 · Descriptores</h3>
+<div class="cards two">
+  <div class="card"><h4>Textura a varias escalas</h4><p>Mide cuánto varía la luminosidad alrededor de cada píxel. El agua es lisa; el pajonal, rugoso.</p></div>
+  <div class="card"><h4>Morfología (top-hat)</h4><p>Resalta estructuras más oscuras o más claras que su entorno: charcas negras y agua que refleja el cielo.</p></div>
+  <div class="card"><h4>Análisis de curvatura (Hessiana)</h4><p>Detecta formas alargadas tipo «valle» (canales) y manchas redondeadas (charcas) a distintos tamaños.</p></div>
+  <div class="card"><h4>Tensor de estructura</h4><p>Mide si los bordes tienen una dirección dominante. Los canales tienen dirección; el pajonal no.</p></div>
+  <div class="card"><h4>Contraste con el vecindario</h4><p>Compara cada zona con su entorno cercano y lejano: lo relevante es ser oscuro respecto a lo que rodea.</p></div>
+  <div class="card"><h4>Filtros de línea (opcional)</h4><p>Detectores clásicos de estructuras lineales que aportan una mejora pequeña pero consistente.</p></div>
+</div>
+
+<h3>Paso 3 · Clasificación</h3>
+<p>Un clasificador de <strong>gradient boosting</strong> (un conjunto de árboles de decisión que se corrigen unos a otros) combina todos los descriptores y estima la probabilidad de que cada píxel sea agua. Para entrenarlo se eligen los ejemplos con cuidado: no se toman muestras de fondo pegadas al borde del agua, porque ahí las máscaras manuales suelen ser imprecisas, y se refuerzan los casos difíciles, como los canales finos, las sombras y la turba oscura.</p>
+
+<h3>Paso 4 · Postproceso con topología</h3>
+<ul>
+  <li><strong>Filtro guiado:</strong> suaviza la probabilidad siguiendo los bordes reales de la fotografía, de modo que el contorno de la máscara se ajusta al de la charca.</li>
+  <li><strong>Umbral con histéresis:</strong> se usan dos umbrales. Un píxel muy probable siembra una zona de agua; uno dudoso solo se conserva si está conectado a una zona segura. Así un canal tenue no se pierde si desemboca en una charca.</li>
+  <li><strong>Limpieza que conserva canales:</strong> se eliminan manchas pequeñas aisladas, salvo las que son alargadas, porque probablemente son fragmentos de canal.</li>
+  <li><strong>Calibración:</strong> los umbrales se eligen en datos de validación buscando el equilibrio entre coincidencia de área y continuidad de los canales.</li>
+</ul>
+
+<h3>Paso 5 · Refinamiento opcional con SAM 2</h3>
+<p>SAM 2 es muy bueno delimitando objetos compactos, pero tiende a perder estructuras largas y finas. Por eso solo se aplica a las charcas compactas: recibe puntos en el centro real de la charca y puntos negativos alrededor, y su resultado se descarta si se desborda o no coincide con la detección original. Los canales nunca pasan por SAM 2.</p>
+
+<h2>Comparación de versiones</h2>
+<div class="table-wrap">
+<table>
+  <thead><tr><th></th><th>Versión 1</th><th>Versión 2</th><th>Versión 3</th></tr></thead>
+  <tbody>
+    <tr><td><strong>Cómo decide</strong></td><td>Reglas fijas de color</td><td>Modelo aprendido de color y textura</td><td>Descriptores de forma y topología + gradient boosting</td></tr>
+    <tr><td><strong>Canales finos</strong></td><td>Casi no los detecta</td><td>Los detecta, pero la limpieza los borra</td><td>Se detectan y se conservan por diseño</td></tr>
+    <tr><td><strong>Cambios de luz y de cámara</strong></td><td>Sensible</td><td>Corrige el viñeteado</td><td>Normaliza iluminación y color en cada foto</td></tr>
+    <tr><td><strong>Escala según altura de vuelo</strong></td><td>No</td><td>Sí</td><td>Sí</td></tr>
+    <tr><td><strong>Papel de SAM 2</strong></td><td>Genera cada máscara</td><td>Afina bordes; se descarta si no coincide</td><td>Opcional; solo charcas compactas</td></tr>
+    <tr><td><strong>Aprende de las máscaras revisadas</strong></td><td>No</td><td>Sí</td><td>Sí</td></tr>
+  </tbody>
+</table>
+</div>
+
+<h2>Métodos evaluados y lecciones aprendidas</h2>
+<p>Antes de incorporar una idea se prueba con el mismo protocolo de validación y se compara foto por foto contra la versión vigente, con intervalos de confianza estadísticos. Estas son las conclusiones:</p>
+<div class="cards two">
+  <div class="card"><div class="meta"><span class="badge off">Descartado como método único</span></div><h4>Umbral automático (Otsu) y agrupamiento (K-means)</h4><p>Por sí solos confunden la turba y las sombras con agua. Funcionan en otros flujos solo cuando cada charca se verifica con un modelo de terreno.</p></div>
+  <div class="card"><div class="meta"><span class="badge ok">Adoptado</span></div><h4>Filtros de línea clásicos</h4><p>Responden casi igual que los detectores de curvatura existentes, pero el clasificador gana un poco con ellos de forma consistente.</p></div>
+  <div class="card"><div class="meta"><span class="badge run">Recomendado al pre-etiquetar</span></div><h4>Cierre de huecos en canales</h4><p>Une fragmentos de un canal siguiendo el camino más oscuro entre ellos. En la métrica es neutro porque las máscaras manuales omiten muchos canales reales; visualmente sí sigue canales verdaderos.</p></div>
+  <div class="card"><div class="meta"><span class="badge wait">Pendiente de más pruebas</span></div><h4>Iluminación robusta</h4><p>Las pruebas sintéticas mostraron que mejora el contraste de charcas muy grandes, pero en las fotos evaluadas no cambió el resultado. Se repetirá con campañas de charcas grandes.</p></div>
+</div>
+
+<div class="callout warn">
+  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10.3 3.9 1.8 18a2 2 0 0 0 1.7 3h17a2 2 0 0 0 1.7-3L13.7 3.9a2 2 0 0 0-3.4 0zM12 9v4M12 17h.01"/></svg>
+  <div><p><strong>Las etiquetas manuales también tienen ruido.</strong> Al revisar los resultados se observó que las personas tienden a omitir canales muy finos. Cuando el pre-etiquetador encuentra uno de esos canales, la métrica lo cuenta como error aunque sea correcto. Por eso las métricas se complementan siempre con revisión visual de paneles comparativos.</p></div>
+</div>
+
+<h2>Control de calidad y trazabilidad</h2>
+<div class="cards four">
+  <div class="card"><h4>Registros separados</h4><p>Revisadas y generadas automáticamente se registran por separado. Una propuesta solo pasa a entrenamiento tras su revisión.</p></div>
+  <div class="card"><h4>Trabajo sobre copias</h4><p>El pre-etiquetado se ejecuta sobre copias de cada conjunto, nunca sobre la carpeta original, y no sobrescribe máscaras manuales.</p></div>
+  <div class="card"><h4>Reanudación</h4><p>Un archivo de progreso permite continuar un proceso interrumpido sin repetir las fotos ya procesadas.</p></div>
+  <div class="card"><h4>Pruebas sintéticas</h4><p>Un conjunto de pruebas automáticas con imágenes artificiales verifica las métricas, los filtros y el postproceso. Estas pruebas ya detectaron y permitieron corregir errores reales.</p></div>
+</div>
+
+<h3>Transferencia a otros dominios</h3>
+<p>El enfoque de detección por color y limpieza morfológica se adaptó también, como prueba, a otro problema agrícola (distinguir hojas sanas y marchitas en cultivos de cacao, con máscaras de varias clases). Esto muestra que la metodología de etiquetado asistido es reutilizable más allá de los humedales.</p>
+
+<nav class="pager" id="pager" aria-label="Paginación"></nav>
+<footer class="site-footer">Proyecto de segmentación de humedales altoandinos · Reserva Ecológica Antisana · <span id="year"></span></footer>
+</main>
+
+<aside class="toc" id="toc" aria-label="Índice de la página"></aside>
+</div>
+<script src="assets/js/sitio.js"></script>
+</body>
+</html>

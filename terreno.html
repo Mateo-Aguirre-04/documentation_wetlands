@@ -1,0 +1,123 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Información del terreno · Humedales altoandinos</title>
+<meta name="description" content="Cómo la fotogrametría y el relieve ayudan a reconocer el agua de los humedales.">
+<link rel="icon" href="assets/img/icono.svg" type="image/svg+xml">
+<link rel="stylesheet" href="assets/css/estilo.css">
+<script>(function(){try{var t=localStorage.getItem("tema");if(!t)t=matchMedia("(prefers-color-scheme: dark)").matches?"dark":"light";document.documentElement.setAttribute("data-theme",t);}catch(e){}})();</script>
+</head>
+<body>
+<a class="skip-link" href="#main">Saltar al contenido</a>
+<header class="site-header">
+  <button class="icon-btn menu-btn" id="menu-btn" aria-label="Abrir menú" aria-expanded="false"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M4 7h16M4 12h16M4 17h16"/></svg></button>
+  <a class="brand" href="index.html"><img class="brand-mark" src="assets/img/icono.svg" alt=""><span>Humedales altoandinos<small>Documentación del proyecto</small></span></a>
+  <div class="header-spacer"></div>
+  <button class="icon-btn" id="theme-btn" aria-label="Cambiar tema"></button>
+</header>
+
+<div class="layout">
+<nav class="sidebar" id="sidebar" aria-label="Secciones"></nav>
+
+<main class="content" id="main">
+<div class="eyebrow">03 · Datos</div>
+<h1>Información del terreno</h1>
+<p class="lead">Una fotografía muestra el color del terreno, pero no su forma. El agua, en cambio, obedece a la forma: se acumula en las depresiones y su superficie es plana y lisa. Esta etapa complementaria reconstruye el relieve para dar al sistema esa pista adicional.</p>
+
+<h2>La idea</h2>
+<p>Algunas confusiones del pre-etiquetado no se pueden resolver mirando solo el color. Un camino de tierra húmeda o una mancha de turba oscura pueden parecer agua en la foto, pero están en una zona plana o elevada donde el agua no se acumularía. Al añadir información de relieve, el sistema puede descartar esos falsos positivos.</p>
+
+<h2>Productos fotogramétricos</h2>
+<p>A partir de las fotos de un vuelo con alto solape, un programa de fotogrametría (OpenDroneMap / WebODM) reconstruye la escena en tres dimensiones y genera:</p>
+<div class="cards">
+  <div class="card"><h4>Ortomosaico</h4><p>Una única imagen continua del área, corregida para que cada punto se vea como desde arriba. Sirve de referencia para ubicar cada foto.</p></div>
+  <div class="card"><h4>Modelo digital de superficie (DSM)</h4><p>Un mapa de alturas de todo lo que se ve desde arriba: suelo, vegetación y agua.</p></div>
+  <div class="card"><h4>Modelo digital del terreno (DTM)</h4><p>En teoría, la altura del suelo desnudo. En el páramo la vegetación es tan baja que el programa no la separa del suelo, así que el DTM resulta casi igual al DSM y no se usa.</p></div>
+</div>
+
+<h2>Capas derivadas del relieve</h2>
+<p>Una vez por vuelo, se calculan sobre el modelo de superficie varias capas que describen dónde podría haber agua.</p>
+
+<figure class="panel">
+  <svg viewBox="0 0 560 210" width="560" role="img" aria-label="Perfil del terreno con depresiones rellenadas de agua">
+    <path d="M0 70 L60 80 L110 120 L170 150 L230 140 L290 92 L340 85 L390 125 L440 135 L490 110 L560 60 L560 200 L0 200 Z" fill="var(--moss)" opacity=".16"/>
+    <path d="M75 92 L110 120 L170 150 L230 140 L290 92 Z" fill="var(--accent)" opacity=".35"/>
+    <path d="M340 85 L390 125 L440 135 L490 110 L525 85 Z" fill="var(--accent)" opacity=".35"/>
+    <path d="M0 70 L60 80 L110 120 L170 150 L230 140 L290 92 L340 85 L390 125 L440 135 L490 110 L560 60" fill="none" stroke="var(--moss)" stroke-width="2.5" stroke-linejoin="round"/>
+    <path d="M0 70 L60 80 L75 92 L290 92 L340 85 L525 85 L560 60" fill="none" stroke="var(--accent)" stroke-width="1.6" stroke-dasharray="5 4"/>
+    <line x1="170" y1="95" x2="170" y2="147" stroke="var(--text)" stroke-width="1.4"/>
+    <path d="M165 102 L170 94 L175 102 M165 140 L170 148 L175 140" fill="none" stroke="var(--text)" stroke-width="1.4"/>
+    <text x="180" y="125" class="svg-text" font-size="12.5" font-weight="600">profundidad de depresión</text>
+    <text x="18" y="58" class="svg-muted" font-size="12">superficie rellenada</text>
+    <text x="395" y="165" class="svg-muted" font-size="12">superficie medida (DSM)</text>
+  </svg>
+  <figcaption>Corte transversal esquemático. Si se «rellena» el terreno como si lloviera hasta desbordar cada hondonada (línea discontinua) y se resta la superficie original (línea continua), se obtiene cuánta agua cabría en cada punto. Las zonas con valor alto son candidatas naturales a contener agua.</figcaption>
+</figure>
+
+<div class="cards two">
+  <div class="card"><span class="card-kicker">Acumulación</span><h4>Profundidad de depresión</h4><p>Cuánta agua podría almacenar cada punto antes de desbordarse hacia una zona más baja.</p></div>
+  <div class="card"><span class="card-kicker">Forma local</span><h4>Relieve local</h4><p>Altura de cada punto respecto a su entorno inmediato, a dos escalas distintas. Un valor negativo indica un hueco.</p></div>
+  <div class="card"><span class="card-kicker">Inclinación</span><h4>Pendiente</h4><p>El agua en reposo es plana: una pendiente alta descarta casi siempre la presencia de agua.</p></div>
+  <div class="card"><span class="card-kicker">Superficie</span><h4>Rugosidad</h4><p>Variación de la altura en distancias cortas. La lámina de agua es lisa; el pajonal, irregular.</p></div>
+  <div class="card"><span class="card-kicker">Espectral</span><h4>Índice de agua (NDWI)</h4><p>Cuando hay cámara multiespectral, se compara la reflectancia en verde y en infrarrojo cercano: el agua absorbe fuertemente el infrarrojo.</p></div>
+</div>
+
+<h2>Alinear cada foto con el terreno</h2>
+<p>El pre-etiquetador trabaja foto por foto, mientras que el relieve está en el sistema de coordenadas del ortomosaico. Para usar las capas hay que saber exactamente qué parte del terreno muestra cada foto:</p>
+
+<div class="pipeline wide">
+  <div class="step c-data"><span class="n">1</span><h4>Posición aproximada</h4><p>Las coordenadas GPS de la foto indican dónde buscar.</p></div>
+  <span class="arrow"></span>
+  <div class="step c-terrain"><span class="n">2</span><h4>Recorte</h4><p>Se toma la zona correspondiente del ortomosaico.</p></div>
+  <span class="arrow"></span>
+  <div class="step c-terrain"><span class="n">3</span><h4>Puntos característicos</h4><p>Se detectan detalles reconocibles en ambas imágenes.</p></div>
+  <span class="arrow"></span>
+  <div class="step c-model"><span class="n">4</span><h4>Emparejamiento robusto</h4><p>Se descartan coincidencias erróneas y se calcula la transformación.</p></div>
+  <span class="arrow"></span>
+  <div class="step c-label"><span class="n">5</span><h4>Capas sobre la foto</h4><p>El relieve se proyecta píxel a píxel sobre la foto.</p></div>
+</div>
+
+<p>La transformación que relaciona la foto con el ortomosaico se llama <strong>homografía</strong>. Los puntos característicos se obtienen con un detector invariante a escala y rotación (SIFT), y el emparejamiento robusto (MAGSAC) ignora las coincidencias incorrectas. El error de alineación resultante es del orden de unos pocos centímetros, suficiente para que el relieve coincida con lo que se ve en la foto.</p>
+
+<div class="callout">
+  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="9"/><path d="M12 11v5M12 8h.01" stroke-linecap="round"/></svg>
+  <div><p><strong>Diseñado para tolerar datos faltantes.</strong> Si una foto no se puede alinear o no hay modelo de superficie para ella, sus capas de relieve quedan vacías y el clasificador decide solo con la información de la imagen. Para que aprenda a manejar ese caso, durante el entrenamiento se ocultan a propósito las capas de una parte de las fotos.</p></div>
+</div>
+
+<h2>Qué aporta</h2>
+<div class="versus">
+  <div class="after">
+    <h4>Dónde ayuda</h4>
+    <ul>
+      <li>Elimina falsos positivos grandes y planos que no están en una hondonada, como caminos húmedos.</li>
+      <li>Mejora pequeña pero estadísticamente consistente en los vuelos de mayor resolución, donde además hay datos multiespectrales.</li>
+    </ul>
+  </div>
+  <div class="before">
+    <h4>Dónde no ayuda o empeora</h4>
+    <ul>
+      <li>En vuelos a mayor altura, con un modelo de superficie menos detallado, el efecto es neutro.</li>
+      <li>En canales anchos con reflejos, la reconstrucción falla sobre el agua y puede abrir huecos en la máscara.</li>
+    </ul>
+  </div>
+</div>
+
+<h2>Limitaciones y siguientes pasos</h2>
+<ul>
+  <li><strong>Campañas sin GPS:</strong> las fotos de 2019 no tienen coordenadas, por lo que no se puede reconstruir un modelo de superficie georreferenciado para ellas.</li>
+  <li><strong>Índice topográfico de humedad:</strong> combina el área que drena hacia cada punto con su pendiente; es un indicador clásico de dónde se acumula el agua.</li>
+  <li><strong>Huecos en la reconstrucción:</strong> el agua no tiene textura y la fotogrametría suele fallar sobre ella; esos huecos pueden usarse como señal de agua en lugar de tratarlos como ruido.</li>
+  <li><strong>Etiquetar sobre el ortomosaico:</strong> trabajar directamente en el sistema de coordenadas del terreno simplificaría la integración, aunque exige un cambio mayor en el flujo.</li>
+</ul>
+
+<nav class="pager" id="pager" aria-label="Paginación"></nav>
+<footer class="site-footer">Proyecto de segmentación de humedales altoandinos · Reserva Ecológica Antisana · <span id="year"></span></footer>
+</main>
+
+<aside class="toc" id="toc" aria-label="Índice de la página"></aside>
+</div>
+<script src="assets/js/sitio.js"></script>
+</body>
+</html>

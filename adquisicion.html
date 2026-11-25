@@ -1,0 +1,145 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Adquisición de imágenes · Humedales altoandinos</title>
+<meta name="description" content="Cómo se obtienen y registran las fotografías aéreas de los humedales.">
+<link rel="icon" href="assets/img/icono.svg" type="image/svg+xml">
+<link rel="stylesheet" href="assets/css/estilo.css">
+<script>(function(){try{var t=localStorage.getItem("tema");if(!t)t=matchMedia("(prefers-color-scheme: dark)").matches?"dark":"light";document.documentElement.setAttribute("data-theme",t);}catch(e){}})();</script>
+</head>
+<body>
+<a class="skip-link" href="#main">Saltar al contenido</a>
+<header class="site-header">
+  <button class="icon-btn menu-btn" id="menu-btn" aria-label="Abrir menú" aria-expanded="false"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M4 7h16M4 12h16M4 17h16"/></svg></button>
+  <a class="brand" href="index.html"><img class="brand-mark" src="assets/img/icono.svg" alt=""><span>Humedales altoandinos<small>Documentación del proyecto</small></span></a>
+  <div class="header-spacer"></div>
+  <button class="icon-btn" id="theme-btn" aria-label="Cambiar tema"></button>
+</header>
+
+<div class="layout">
+<nav class="sidebar" id="sidebar" aria-label="Secciones"></nav>
+
+<main class="content" id="main">
+<div class="eyebrow">01 · Datos</div>
+<h1>Adquisición de imágenes</h1>
+<p class="lead">Todo el sistema parte de fotografías aéreas tomadas con dron sobre los humedales. La calidad y la organización de esos datos condicionan cada etapa posterior.</p>
+
+<h2>Plataformas y campañas</h2>
+<p>Las imágenes se adquieren con vehículos aéreos no tripulados en varias campañas de vuelo sobre Pugllohuma y otros sectores de Antisana. Se han usado plataformas de despegue y aterrizaje vertical (VTOL) y multirrotores equipados con cámara RGB y, en algunos vuelos, cámara multiespectral.</p>
+<div class="cards">
+  <div class="card">
+    <span class="card-kicker">Campaña histórica</span>
+    <h4>Vuelos de 2019</h4>
+    <p>Fotografías de otra cámara, sin coordenadas GPS en sus metadatos. Aportan diversidad (otra fecha, otra iluminación, otro sensor), pero no permiten reconstruir el terreno.</p>
+  </div>
+  <div class="card">
+    <span class="card-kicker">Campañas recientes</span>
+    <h4>Vuelos a baja altura</h4>
+    <p>Vuelos con GPS y alto solape entre fotos, que permiten generar ortomosaicos y modelos de superficie. Dan el mayor nivel de detalle.</p>
+  </div>
+  <div class="card">
+    <span class="card-kicker">Campañas recientes</span>
+    <h4>Vuelos a mayor altura</h4>
+    <p>Cubren más superficie por foto con menos detalle por píxel. Sirven para comprobar que el sistema funciona a distintas escalas.</p>
+  </div>
+</div>
+
+<h2>Altura de vuelo y resolución en el suelo</h2>
+<p>La <strong>distancia de muestreo en el suelo</strong> (GSD, por sus siglas en inglés) indica cuánto terreno representa un píxel. Depende de la cámara y, sobre todo, de la altura: si el dron vuela al doble de altura, cada píxel abarca el doble de terreno y los objetos se ven a la mitad de tamaño.</p>
+
+<figure class="panel">
+  <svg viewBox="0 0 560 250" width="560" role="img" aria-label="Comparación de la huella de una foto a baja y a mayor altura">
+    <line x1="10" y1="190" x2="550" y2="190" stroke="var(--border)" stroke-width="2"/>
+    <!-- Panel A -->
+    <g>
+      <path d="M140 102 L80 190 L200 190 Z" fill="var(--sky)" opacity=".10"/>
+      <path d="M140 102 L80 190 M140 102 L200 190" stroke="var(--sky)" stroke-dasharray="4 4" fill="none"/>
+      <rect x="128" y="94" width="24" height="8" rx="2" fill="var(--text)"/>
+      <circle cx="126" cy="93" r="4" fill="none" stroke="var(--text)"/><circle cx="154" cy="93" r="4" fill="none" stroke="var(--text)"/>
+      <g fill="var(--sky)" opacity=".35" stroke="var(--surface)" stroke-width="1.5">
+        <rect x="80" y="190" width="20" height="14"/><rect x="100" y="190" width="20" height="14"/><rect x="120" y="190" width="20" height="14"/>
+        <rect x="140" y="190" width="20" height="14"/><rect x="160" y="190" width="20" height="14"/><rect x="180" y="190" width="20" height="14"/>
+      </g>
+      <line x1="60" y1="102" x2="60" y2="190" stroke="var(--muted)"/><line x1="55" y1="102" x2="65" y2="102" stroke="var(--muted)"/>
+      <text x="52" y="150" text-anchor="end" class="svg-muted" font-size="12">altura h</text>
+      <text x="140" y="226" text-anchor="middle" class="svg-text" font-size="13" font-weight="600">Vuelo bajo</text>
+      <text x="140" y="243" text-anchor="middle" class="svg-muted" font-size="12">píxel pequeño · más detalle</text>
+    </g>
+    <!-- Panel B -->
+    <g>
+      <path d="M420 20 L300 190 L540 190 Z" fill="var(--accent)" opacity=".08"/>
+      <path d="M420 20 L300 190 M420 20 L540 190" stroke="var(--accent)" stroke-dasharray="4 4" fill="none"/>
+      <rect x="408" y="12" width="24" height="8" rx="2" fill="var(--text)"/>
+      <circle cx="406" cy="11" r="4" fill="none" stroke="var(--text)"/><circle cx="434" cy="11" r="4" fill="none" stroke="var(--text)"/>
+      <g fill="var(--accent)" opacity=".35" stroke="var(--surface)" stroke-width="1.5">
+        <rect x="300" y="190" width="40" height="14"/><rect x="340" y="190" width="40" height="14"/><rect x="380" y="190" width="40" height="14"/>
+        <rect x="420" y="190" width="40" height="14"/><rect x="460" y="190" width="40" height="14"/><rect x="500" y="190" width="40" height="14"/>
+      </g>
+      <line x1="285" y1="20" x2="285" y2="190" stroke="var(--muted)"/><line x1="280" y1="20" x2="290" y2="20" stroke="var(--muted)"/>
+      <text x="292" y="110" class="svg-muted" font-size="12">2h</text>
+      <text x="420" y="226" text-anchor="middle" class="svg-text" font-size="13" font-weight="600">Vuelo al doble de altura</text>
+      <text x="420" y="243" text-anchor="middle" class="svg-muted" font-size="12">el mismo número de píxeles cubre el doble de terreno</text>
+    </g>
+  </svg>
+  <figcaption>Con el mismo sensor, duplicar la altura duplica el tamaño de cada píxel en el terreno. Por eso el sistema lee la altura de vuelo de cada foto y ajusta la escala de análisis: un canal de 30 cm debe reconocerse igual en una foto tomada a baja o a mayor altura.</figcaption>
+</figure>
+
+<div class="callout">
+  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="9"/><path d="M12 11v5M12 8h.01" stroke-linecap="round"/></svg>
+  <div><p><strong>Escala física, no escala en píxeles.</strong> Los criterios del sistema (por ejemplo, el tamaño mínimo de una charca) se expresan en metros sobre el terreno y se convierten a píxeles según la altura de cada foto. Así se evita que el resultado dependa de cómo se voló.</p></div>
+</div>
+
+<h2>Solape y fotogrametría</h2>
+<p>Las fotos de un vuelo planificado se toman con un <strong>alto solape</strong>: cada punto del terreno aparece en varias imágenes desde ángulos ligeramente distintos. Esto permite, mediante <strong>fotogrametría</strong>, unir las fotos en un <strong>ortomosaico</strong> (una imagen continua y sin distorsión de perspectiva) y reconstruir la altura de la superficie en un <strong>modelo digital de superficie</strong> (DSM). Estos productos se describen en <a href="terreno.html">Información del terreno</a>.</p>
+
+<h2>Metadatos de cada fotografía</h2>
+<p>Cada imagen trae información incrustada por la cámara y el dron. El sistema la aprovecha para trabajar de forma automática:</p>
+<div class="table-wrap">
+<table>
+  <thead><tr><th>Metadato</th><th>Para qué se usa</th></tr></thead>
+  <tbody>
+    <tr><td>Altura de vuelo</td><td>Ajustar la escala de análisis de cada foto. Si una foto no la tiene, se indica manualmente para toda la campaña.</td></tr>
+    <tr><td>Coordenadas GPS</td><td>Ubicar la foto sobre el ortomosaico y el modelo de superficie, y agrupar fotos cercanas al dividir los datos.</td></tr>
+    <tr><td>Fecha y hora</td><td>Identificar la campaña y las condiciones de iluminación.</td></tr>
+    <tr><td>Modelo de cámara y óptica</td><td>Calcular el tamaño del píxel en el terreno y reconocer el viñeteado (oscurecimiento de las esquinas) propio de cada lente.</td></tr>
+    <tr><td>Orientación</td><td>Leer la imagen siempre con la misma orientación que su máscara.</td></tr>
+  </tbody>
+</table>
+</div>
+
+<h2>Registro de cada campaña</h2>
+<p>Para que las campañas sean comparables entre sí, cada vuelo (o <em>emisión</em>) se documenta con un identificador único y un conjunto mínimo de datos.</p>
+<div class="cards two">
+  <div class="card"><h4>Identificación</h4><ul><li>Identificador único de la emisión</li><li>Fecha, hora de inicio y fin</li><li>Zona monitoreada</li><li>Operador, dron y cámara</li></ul></div>
+  <div class="card"><h4>Parámetros de vuelo</h4><ul><li>Altura de vuelo constante</li><li>Solape entre fotografías</li><li>Georreferenciación (GPS o RTK)</li><li>Puntos de control en tierra, si se usan</li></ul></div>
+  <div class="card"><h4>Condiciones ambientales</h4><ul><li>Temperatura y humedad</li><li>Viento y nubosidad</li><li>Precipitación</li><li>Hora de adquisición (iluminación)</li></ul></div>
+  <div class="card"><h4>Mediciones de campo</h4><ul><li>Puntos de profundidad con su ubicación</li><li>Humedal y método de medición</li><li>Fecha, hora y observaciones</li></ul></div>
+</div>
+
+<h3>Puntos de control y mediciones de profundidad</h3>
+<p>Los <strong>puntos de control terrestre</strong> (GCP) son marcas visibles colocadas en posiciones conocidas; mejoran la precisión con la que se alinean los productos de distintas campañas. Las <strong>mediciones de profundidad</strong> tomadas en campo, cada una con su ubicación, son la referencia que necesitará el sistema para aprender a estimar la profundidad del agua en fases futuras.</p>
+
+<h2>Organización de los datos de una emisión</h2>
+<p>Los datos de cada campaña se guardan con una estructura fija que separa lo original de lo derivado:</p>
+<div class="tree"><span class="d">EMISIÓN/</span>
+├── <span class="d">01 · Originales/</span>      <span class="c">fotos sin modificar, registro de vuelo, GPS</span>
+├── <span class="d">02 · Campo/</span>           <span class="c">profundidades, puntos de control, condiciones ambientales</span>
+├── <span class="d">03 · Fotogrametría/</span>   <span class="c">ortomosaico, modelo de superficie, nube de puntos</span>
+└── <span class="d">04 · Dataset/</span>         <span class="c">imágenes, máscaras de agua y capas listas para entrenar</span></div>
+
+<div class="callout warn">
+  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10.3 3.9 1.8 18a2 2 0 0 0 1.7 3h17a2 2 0 0 0 1.7-3L13.7 3.9a2 2 0 0 0-3.4 0zM12 9v4M12 17h.01"/></svg>
+  <div><p><strong>Los originales nunca se modifican.</strong> Todo procesamiento (pre-etiquetado, recortes, conversiones) se hace sobre copias. Así siempre es posible volver al dato de partida y repetir un proceso con otra configuración.</p></div>
+</div>
+
+<nav class="pager" id="pager" aria-label="Paginación"></nav>
+<footer class="site-footer">Proyecto de segmentación de humedales altoandinos · Reserva Ecológica Antisana · <span id="year"></span></footer>
+</main>
+
+<aside class="toc" id="toc" aria-label="Índice de la página"></aside>
+</div>
+<script src="assets/js/sitio.js"></script>
+</body>
+</html>

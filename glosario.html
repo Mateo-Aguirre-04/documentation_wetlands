@@ -1,0 +1,152 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Glosario · Humedales altoandinos</title>
+<meta name="description" content="Definiciones de los términos usados en la documentación del proyecto.">
+<link rel="icon" href="assets/img/icono.svg" type="image/svg+xml">
+<link rel="stylesheet" href="assets/css/estilo.css">
+<script>(function(){try{var t=localStorage.getItem("tema");if(!t)t=matchMedia("(prefers-color-scheme: dark)").matches?"dark":"light";document.documentElement.setAttribute("data-theme",t);}catch(e){}})();</script>
+</head>
+<body>
+<a class="skip-link" href="#main">Saltar al contenido</a>
+<header class="site-header">
+  <button class="icon-btn menu-btn" id="menu-btn" aria-label="Abrir menú" aria-expanded="false"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M4 7h16M4 12h16M4 17h16"/></svg></button>
+  <a class="brand" href="index.html"><img class="brand-mark" src="assets/img/icono.svg" alt=""><span>Humedales altoandinos<small>Documentación del proyecto</small></span></a>
+  <div class="header-spacer"></div>
+  <button class="icon-btn" id="theme-btn" aria-label="Cambiar tema"></button>
+</header>
+
+<div class="layout">
+<nav class="sidebar" id="sidebar" aria-label="Secciones"></nav>
+
+<main class="content" id="main">
+<div class="eyebrow">Referencia</div>
+<h1>Glosario</h1>
+<p class="lead">Definiciones breves de los términos técnicos que aparecen en esta documentación.</p>
+
+<nav class="letters" aria-label="Ir a la letra">
+  <a href="#a">A</a><a href="#b">B</a><a href="#c">C</a><a href="#d">D</a><a href="#e">E</a><a href="#f">F</a><a href="#g">G</a><a href="#h">H</a><a href="#i">I</a><a href="#l">L</a><a href="#m">M</a><a href="#n">N</a><a href="#o">O</a><a href="#p">P</a><a href="#r">R</a><a href="#s">S</a><a href="#t">T</a><a href="#u">U</a><a href="#v">V</a>
+</nav>
+
+<dl class="glossary">
+  <dt id="a">Atención (mecanismo de)</dt>
+  <dd>Componente de una red que aprende a dar más peso a las partes de la información más relevantes para la tarea, ya sea a ciertos rasgos o a ciertas zonas de la imagen.</dd>
+  <dt>Aprendizaje por transferencia</dt>
+  <dd>Partir de una red ya entrenada con un gran volumen de imágenes generales y adaptarla al problema propio, en lugar de entrenarla desde cero.</dd>
+  <dt>Aumento de datos</dt>
+  <dd>Transformaciones aplicadas a las fotos durante el entrenamiento (giros, volteos, cambios de escala o de color) para que la red vea más variedad sin necesidad de nuevas imágenes. La máscara se transforma exactamente igual que la foto.</dd>
+
+  <dt id="b">Bootstrap</dt>
+  <dd>Técnica estadística que remuestrea los datos muchas veces para estimar la incertidumbre de una medida, por ejemplo el intervalo de confianza de una diferencia entre dos métodos.</dd>
+
+  <dt id="c">CBAM</dt>
+  <dd>Módulo de atención convolucional que decide qué rasgos son importantes (atención por canal) y en qué lugar de la imagen están (atención espacial).</dd>
+  <dt>clDice</dt>
+  <dd>Métrica que compara los esqueletos de la predicción y de la referencia. Penaliza que un canal quede cortado aunque el área total casi no cambie.</dd>
+  <dt>Codificador y decodificador <small>encoder / decoder</small></dt>
+  <dd>Las dos mitades de una red de segmentación: el codificador resume la imagen en rasgos abstractos y el decodificador los convierte de nuevo en un mapa a resolución completa.</dd>
+  <dt>Conexión de salto</dt>
+  <dd>Enlace que lleva información detallada desde el codificador hasta el decodificador para recuperar bordes precisos.</dd>
+  <dt>Conjuntos de entrenamiento, validación y prueba</dt>
+  <dd>Tres particiones de los datos: la primera para aprender, la segunda para tomar decisiones y la tercera, reservada, para la evaluación final imparcial.</dd>
+
+  <dt id="d">Descongelamiento progresivo</dt>
+  <dd>Estrategia de entrenamiento en la que primero solo se ajusta el decodificador y luego, por etapas, se permite ajustar las capas más profundas del codificador preentrenado.</dd>
+  <dt>Dice</dt>
+  <dd>Medida de coincidencia entre dos máscaras, equivalente al F1. También se usa como función de pérdida, útil cuando el agua ocupa una fracción pequeña de la imagen.</dd>
+  <dt>DSM <small>modelo digital de superficie</small></dt>
+  <dd>Mapa de alturas de todo lo visible desde arriba, incluidos vegetación y agua, obtenido por fotogrametría.</dd>
+  <dt>DTM <small>modelo digital del terreno</small></dt>
+  <dd>Mapa de alturas del suelo desnudo, sin vegetación. En el páramo, por la vegetación baja, apenas se distingue del DSM.</dd>
+
+  <dt id="e">EMA <small>promedio móvil exponencial de pesos</small></dt>
+  <dd>Copia de la red cuyos parámetros son un promedio de sus estados recientes. Suele generalizar mejor y ser más estable que el último estado.</dd>
+  <dt>Época</dt>
+  <dd>Una pasada completa de la red por todos los datos de entrenamiento.</dd>
+  <dt>Exhaustividad <small>recall</small></dt>
+  <dd>Fracción del agua real que la red consigue detectar.</dd>
+
+  <dt id="f">Fotogrametría</dt>
+  <dd>Técnica que reconstruye la forma tridimensional de una escena a partir de fotografías solapadas tomadas desde distintas posiciones.</dd>
+  <dt>FPN <small>pirámide de características</small></dt>
+  <dd>Estructura que combina rasgos extraídos a distintas escalas para reconocer objetos de tamaños muy diferentes.</dd>
+  <dt>Fuga de información</dt>
+  <dd>Situación en la que el modelo accede, directa o indirectamente, a información de la respuesta o de los datos de prueba durante el entrenamiento, lo que produce resultados engañosamente buenos.</dd>
+
+  <dt id="g">Gradient boosting</dt>
+  <dd>Método de aprendizaje que combina muchos árboles de decisión sencillos, cada uno corrigiendo los errores de los anteriores.</dd>
+  <dt>GSD <small>distancia de muestreo en el suelo</small></dt>
+  <dd>Tamaño del terreno que representa un píxel de la foto. Aumenta con la altura de vuelo.</dd>
+
+  <dt id="h">Hessiana</dt>
+  <dd>Herramienta matemática que describe la curvatura local de la luminosidad. Permite detectar estructuras alargadas (canales) y manchas redondeadas (charcas).</dd>
+  <dt>Hiperparámetro</dt>
+  <dd>Ajuste del entrenamiento que no aprende la red por sí misma y se fija antes, como la tasa de aprendizaje o el peso de cada término de la pérdida.</dd>
+  <dt>Histéresis (umbral con)</dt>
+  <dd>Uso de dos umbrales: uno alto para sembrar zonas seguras y uno bajo para extenderlas solo por píxeles conectados a ellas.</dd>
+  <dt>Homografía</dt>
+  <dd>Transformación geométrica que relaciona dos imágenes de una misma superficie vista desde puntos diferentes.</dd>
+
+  <dt id="i">IoU <small>intersección sobre unión</small></dt>
+  <dd>Área común entre predicción y referencia dividida por el área total que marcan entre ambas. Métrica principal del proyecto.</dd>
+
+  <dt id="l">Lote <small>batch</small></dt>
+  <dd>Grupo de ejemplos que la red procesa a la vez antes de ajustar sus parámetros.</dd>
+
+  <dt id="m">Máscara de segmentación</dt>
+  <dd>Imagen del tamaño de la foto en la que cada píxel indica su clase: humedal o fondo.</dd>
+  <dt>Modelo fundacional</dt>
+  <dd>Red entrenada con cantidades enormes de datos para servir de base a muchas tareas distintas, como SAM 2 para segmentación.</dd>
+
+  <dt id="n">NDWI <small>índice de agua de diferencia normalizada</small></dt>
+  <dd>Índice que compara la reflectancia en verde y en infrarrojo cercano. El agua tiene valores altos porque absorbe el infrarrojo.</dd>
+
+  <dt id="o">Ortomosaico</dt>
+  <dd>Imagen continua de toda el área volada, compuesta a partir de muchas fotos y corregida para que cada punto se vea como desde arriba.</dd>
+
+  <dt id="p">Parche y tesela</dt>
+  <dd>Recortes de una foto. Los parches se usan para entrenar; las teselas, solapadas, para recorrer una foto completa al predecir.</dd>
+  <dt>Pérdida <small>función de pérdida</small></dt>
+  <dd>Número que mide cuánto se equivoca la red en un ejemplo. El entrenamiento consiste en reducirla.</dd>
+  <dt>Precisión</dt>
+  <dd>Fracción de lo que la red marcó como agua que realmente es agua.</dd>
+
+  <dt id="r">ResNet</dt>
+  <dd>Familia de redes convolucionales con «atajos» internos que permiten entrenar redes muy profundas. Se usa como codificador en varias arquitecturas del proyecto.</dd>
+
+  <dt id="s">SAM 2</dt>
+  <dd>Modelo fundacional de segmentación que delimita un objeto a partir de indicaciones simples, como puntos o un recuadro.</dd>
+  <dt>Segmentación semántica</dt>
+  <dd>Tarea de asignar una clase a cada píxel de una imagen.</dd>
+  <dt>Semilla</dt>
+  <dd>Número que fija las decisiones aleatorias de un experimento. Repetir con varias semillas permite separar diferencias reales de diferencias debidas al azar.</dd>
+  <dt>Sobreajuste <small>overfitting</small></dt>
+  <dd>Cuando la red memoriza los ejemplos de entrenamiento en lugar de aprender reglas generales, y empeora en datos nuevos.</dd>
+  <dt>Superposición <small>overlay</small></dt>
+  <dd>Foto original con la máscara pintada encima en un color semitransparente, usada para revisar visualmente.</dd>
+
+  <dt id="t">Tasa de aprendizaje</dt>
+  <dd>Tamaño de los pasos con que la red corrige sus parámetros en cada iteración.</dd>
+  <dt>Transformer</dt>
+  <dd>Arquitectura basada en atención que relaciona todas las partes de la entrada entre sí, lo que le permite captar contexto global.</dd>
+
+  <dt id="u">Umbral</dt>
+  <dd>Valor de probabilidad a partir del cual un píxel se considera humedal. Se ajusta en validación.</dd>
+
+  <dt id="v">Viñeteado</dt>
+  <dd>Oscurecimiento de las esquinas de una foto causado por el lente. Puede confundirse con agua si no se trata.</dd>
+  <dt>VTOL</dt>
+  <dd>Aeronave de despegue y aterrizaje vertical que vuela como avión en crucero, lo que permite cubrir áreas grandes.</dd>
+</dl>
+
+<nav class="pager" id="pager" aria-label="Paginación"></nav>
+<footer class="site-footer">Proyecto de segmentación de humedales altoandinos · Reserva Ecológica Antisana · <span id="year"></span></footer>
+</main>
+
+<aside class="toc" id="toc" aria-label="Índice de la página"></aside>
+</div>
+<script src="assets/js/sitio.js"></script>
+</body>
+</html>
